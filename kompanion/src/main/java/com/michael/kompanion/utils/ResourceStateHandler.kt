@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.map
  * @param onLoading A lambda function called on Resource.Loading.
  * @param onError A lambda function called on Resource.ServerError.
  */
-suspend inline fun <reified T> handleFlowResourceStates(
+suspend inline fun <reified T> kompanionHandleFlowResourceStates(
     resource: Flow<Resource<T>>?,
     crossinline onSuccess: (T) -> Unit = {},
     crossinline onFailure: (Exception) -> Unit = {},
@@ -43,7 +43,7 @@ suspend inline fun <reified T> handleFlowResourceStates(
 
 
 
-suspend inline fun <reified T> handleResourceStates(
+suspend inline fun <reified T> kompanionHandleResourceStates(
     resource: Resource<T>?,
     crossinline onSuccess: (T) -> Unit = {},
     crossinline onFailure: (Exception) -> Unit = {},

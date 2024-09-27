@@ -36,7 +36,7 @@ stateCollector.observe { state ->
 // Handle state updates here
 }
  */
-class LifeCycleStateCollector<T>(
+class KompanionLifeCycleStateCollector<T>(
     private val stateFlow: Flow<T>,
     private val lifecycle: Lifecycle,
     private val minActiveState: Lifecycle.State = Lifecycle.State.STARTED
@@ -90,10 +90,10 @@ Example:
 val stateCollector = rememberStateWithLifecycle(stateFlow, lifecycle)
  */
 
-fun <T> rememberStateWithLifecycle(
+fun <T> kompanionRememberStateWithLifecycle(
     stateFlow: Flow<T>,
     lifecycle: Lifecycle,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED
-): LifeCycleStateCollector<T> {
-    return LifeCycleStateCollector(stateFlow, lifecycle, minActiveState)
+): KompanionLifeCycleStateCollector<T> {
+    return KompanionLifeCycleStateCollector(stateFlow, lifecycle, minActiveState)
 }

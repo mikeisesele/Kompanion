@@ -1,15 +1,13 @@
 package com.michael.kompanion.utils
 
-import android.content.SharedPreferences
-import android.os.Build
-import androidx.annotation.ChecksSdkIntAtLeast
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
-import java.util.Locale
+import com.michael.easylog.logInline
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import kotlin.math.round
 import kotlin.random.Random
+import kotlin.reflect.KClass
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.primaryConstructor
 
 /**
 * Checks if all the provided objects are not null.
@@ -17,7 +15,7 @@ import kotlin.random.Random
 * @param objects List of objects to check.
 * @return `true` if all objects are not null, `false` otherwise.
 */
-fun <T> allNotNull(vararg objects: T?): Boolean {
+fun <T> kompanionAllNotNull(vararg objects: T?): Boolean {
     return objects.all { it != null }
 }
 
@@ -27,7 +25,7 @@ fun <T> allNotNull(vararg objects: T?): Boolean {
  * @param objects List of objects to check.
  * @return `true` if any object is null, `false` otherwise.
  */
-fun <T> anyIsNull(vararg objects: T?): Boolean {
+fun <T> kompanionAnyIsNull(vararg objects: T?): Boolean {
     return objects.any { it == null }
 }
 
@@ -37,7 +35,7 @@ fun <T> anyIsNull(vararg objects: T?): Boolean {
  *
  * @param objects List of ArrayLists to clear.
  */
-fun <T> clearAllArray(vararg objects: T?) {
+fun <T> kompanionClearAllArray(vararg objects: T?) {
     objects.forEach { (it as ArrayList<*>).clear() }
 }
 
@@ -62,297 +60,9 @@ inline fun <T> T?.ifNullPerform(operation: () -> Unit) {
 
 
 /**
- * Reverses the elements of a list in place.
- */
-fun <T> MutableList<T>.reverse() {
-    var left = 0
-    var right = size - 1
-    while (left < right) {
-        val temp = this[left]
-        this[left] = this[right]
-        this[right] = temp
-        left++
-        right--
-    }
-}
-
-/**
- * Checks if a list is sorted in ascending order.
- */
-fun <T : Comparable<T>> List<T>.isSorted(): Boolean {
-    for (i in 0 until size - 1) {
-        if (this[i] > this[i + 1]) {
-            return false
-        }
-    }
-    return true
-}
-
-/**
- * Checks if two lists contain the same elements regardless of order.
- */
-fun <T> List<T>.hasSameElementsAs(other: List<T>): Boolean {
-    if (size != other.size) return false
-    val copy = this.toMutableList()
-    for (element in other) {
-        if (!copy.remove(element)) {
-            return false
-        }
-    }
-    return copy.isEmpty()
-}
-
-/**
- * Returns the most common element in a list.
- */
-fun <T> List<T>.mostCommonElement(): T? {
-    if (isEmpty()) return null
-    val elementCountMap = groupBy { it }.mapValues { it.value.size }
-    val maxCount = elementCountMap.values.maxOrNull() ?: 0
-    return elementCountMap.entries.firstOrNull { it.value == maxCount }?.key
-}
-
-/**
- * Checks if two lists contain the same elements in the same order.
- */
-fun <T> List<T>.contentEquals(other: List<T>): Boolean = this == other
-
-/**
- * Removes duplicate elements from a list while preserving the order.
- */
-fun <T> List<T>.distinctByPreservingOrder(): List<T> {
-    val seen = mutableSetOf<T>()
-    return filter { seen.add(it) }
-}
-
-/**
- * Splits a list into chunks of a specified size.
- */
-fun <T> List<T>.chunked(size: Int): List<List<T>> {
-    val result = mutableListOf<List<T>>()
-    var index = 0
-    while (index < size) {
-        result.add(subList(index, minOf(index + size, size)))
-        index += size
-    }
-    return result
-}
-
-
-/**
- * Transposes a 2D list (list of lists).
- */
-fun <T> List<List<T>>.transpose(): List<List<T>> =
-    if (isEmpty()) emptyList()
-    else this[0].indices.map { col -> map { it[col] } }
-
-/**
- * Zips two lists together into a list of pairs.
- */
-fun <T, U> List<T>.zipWith(other: List<U>): List<Pair<T, U>> {
-    val size = minOf(size, other.size)
-    val result = mutableListOf<Pair<T, U>>()
-    for (i in 0 until size) {
-        result.add(this[i] to other[i])
-    }
-    return result
-}
-
-/**
- * Performs a deep clone of a list of serializable objects.
- */
-@Suppress("UNCHECKED_CAST")
-fun <T> List<T>.deepClone(): List<T> {
-    val byteArrayOutputStream = ByteArrayOutputStream()
-    val objectOutputStream = ObjectOutputStream(byteArrayOutputStream)
-    objectOutputStream.writeObject(this)
-    objectOutputStream.flush()
-    objectOutputStream.close()
-    val byteArrayInputStream = ByteArrayInputStream(byteArrayOutputStream.toByteArray())
-    val objectInputStream = ObjectInputStream(byteArrayInputStream)
-    return objectInputStream.readObject() as List<T>
-}
-
-/**
- * Reverses the elements of an array in place.
- */
-fun <T> Array<T>.reverse() {
-    var left = 0
-    var right = size - 1
-    while (left < right) {
-        val temp = this[left]
-        this[left] = this[right]
-        this[right] = temp
-        left++
-        right--
-    }
-}
-
-
-/**
-* remove an item from a mutable list
-*/
-fun <T> MutableList<T>.removeItem(item: T): Boolean {
-    val index = indexOf(item)
-    return if (index != -1) {
-        removeAt(index)
-         true
-    }  else false
-}
-
-
-/**
- * Checks if an array is sorted in ascending order.
- */
-fun <T : Comparable<T>> Array<T>.isSorted(): Boolean {
-    for (i in 0 until size - 1) {
-        if (this[i] > this[i + 1]) {
-            return false
-        }
-    }
-    return true
-}
-
-/**
- * Checks if two arrays contain the same elements regardless of order.
- */
-fun <T> Array<T>.hasSameElementsAs(other: Array<T>): Boolean {
-    if (size != other.size) return false
-    val copy = this.toMutableList()
-    for (element in other) {
-        if (!copy.remove(element)) { return false }
-    }
-    return copy.isEmpty()
-}
-
-
-/**
- * Calculates the sum of all elements in a list of numbers.
- */
-fun List<Int>.sum(): Int = reduce { acc, num -> acc + num }
-
-/**
- * Calculates the product of all elements in a list of numbers.
- */
-fun List<Int>.product(): Long = map { it.toLong() }.reduce { acc, num -> acc * num }
-
-/**
- * Reverses a string.
- */
-fun String.reverse(): String = reversed()
-
-/**
- * Capitalizes the first letter of each word in a string.
- */
-fun String.capitalizeWords(): String = split(" ").joinToString(" ") { it.capitalize() }
-
-/**
- * Checks if a string contains only digits.
- */
-fun String.isNumeric(): Boolean = all { it.isDigit() }
-
-/**
  * Generates a random integer within the specified range.
  */
 fun randomInt(min: Int, max: Int): Int = (min..max).random()
-
-/**
- * Generates a random element from a list.
- */
-fun <T> List<T>.randomElement(): T? = if (isEmpty()) null else get((indices).random())
-
-/**
- * Repeats a string a specified number of times.
- */
-fun String.repeat(times: Int): String = repeat(times)
-
-/**
- * Creates a new list with the elements shuffled.
- */
-fun <T> List<T>.shuffle(): List<T> = toMutableList().apply { shuffle() }
-
-/**
- * Converts a string to a list of characters.
- */
-fun String.toCharArray(): CharArray = toCharArray()
-
-/**
- * Converts a string to a list of CharArrays.
- */
-fun String.toCharArrayList(): List<CharArray> = toCharArray().toList()
-
-fun String.toCharList(): List<Char> = this.toCharList()
-
-/**
- * Splits a string into lines.
- */
-fun String.splitLines(): List<String> = lines()
-
-/**
- * Checks if a string contains another string ignoring case.
- */
-fun String.containsIgnoreCase(other: String): Boolean = this.toLowerCase(Locale.ROOT).contains(other.toLowerCase(Locale.ROOT))
-
-/**
- * Pads a string to the specified length with spaces.
- */
-fun String.padSpaces(length: Int): String = padEnd(length)
-
-/**
- * Truncates a string to the specified length and appends an ellipsis if necessary.
- */
-fun String.truncate(length: Int): String = if (length >= length) this else substring(0, length) + "..."
-
-/**
- * Checks if a string is empty or consists only of whitespace characters.
- */
-fun String.isNullOrBlank(): Boolean = isNullOrBlank()
-
-/**
- * Converts a list of strings into a single string separated by the specified delimiter.
- */
-fun List<String>.joinToString(delimiter: String): String = joinToString(delimiter)
-
-/**
- * Finds the longest common prefix among a list of strings.
- */
-fun List<String>.longestCommonPrefix(): String {
-    if (isEmpty()) return ""
-    val shortest = minByOrNull { it.length } ?: return ""
-    for (i in shortest.indices) {
-        val char = shortest[i]
-        if (none { it.length <= i || it[i] != char }) {
-            return shortest.substring(0, i + 1)
-        }
-    }
-    return shortest
-}
-
-/**
- * Finds the shortest common suffix among a list of strings.
- */
-fun List<String>.shortestCommonSuffix(): String {
-    if (isEmpty()) return ""
-    val longest = maxByOrNull { it.length } ?: return ""
-    for (i in longest.indices.reversed()) {
-        val char = longest[i]
-        if (none { it.length <= i || it[it.length - 1 - i] != char }) {
-            return longest.substring(longest.length - i - 1)
-        }
-    }
-    return longest
-}
-
-/**
- * Checks if a string is a valid email address.
- */
-fun String.isValidEmail(): Boolean = matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}".toRegex())
-
-
-/**
- * Creates a shallow copy of the list.
- */
-fun <T> List<T>.shallowCopy(): List<T> = ArrayList(this)
 
 /**
  * Creates a shallow copy of the set.
@@ -377,40 +87,73 @@ fun factorial(n: Int): Long {
 }
 
 /**
+ * Retrieves the value for the given key or returns the default value if the key doesn't exist or the value is null.
+ */
+inline fun <K, V> Map<K, V?>.getOrDefault(key: K, defaultValue: () -> V): V {
+    return this[key] ?: defaultValue()
+}
+
+/**
+ * Executes the block if all provided arguments are not null.
+ */
+inline fun <T1, T2, R> runIfNotNull(arg1: T1?, arg2: T2?, block: (T1, T2) -> R): R? {
+    return if (arg1 != null && arg2 != null) block(arg1, arg2) else null
+}
+
+/**
+ * Runs the block if all provided values are non-null.
+ */
+inline fun <T1, T2, T3, R> ifAllNotNull(arg1: T1?, arg2: T2?, arg3: T3?, block: (T1, T2, T3) -> R): R? {
+    return if (arg1 != null && arg2 != null && arg3 != null) block(arg1, arg2, arg3) else null
+}
+
+/**
+ * Swaps two elements in a mutable list.
+ */
+fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
+    val tmp = this[index1]
+    this[index1] = this[index2]
+    this[index2] = tmp
+}
+
+/**
+ * Safely casts the object to the given type or returns the default value.
+ */
+inline fun <reified T> Any?.castOrDefault(defaultValue: () -> T): T {
+    return this as? T ?: defaultValue()
+}
+
+/**
+ * Initializes the value if it's null.
+ */
+inline fun <T> T?.initializeIfNull(initializer: () -> T): T {
+    return this ?: initializer()
+}
+
+
+/**
+ * Checks if all strings in the collection are non-null and non-empty.
+ */
+fun Collection<String?>.allNotEmpty(): Boolean {
+    return this.all { !it.isNullOrEmpty() }
+}
+
+/**
+ * Runs an action for each non-null element in a collection.
+ */
+inline fun <T> Collection<T?>.forEachNotNull(action: (T) -> Unit) {
+    for (element in this) {
+        element?.let(action)
+    }
+}
+
+
+/**
  * Checks if a string is a palindrome.
  */
 fun isPalindrome(str: String): Boolean = str == str.reversed()
 
-/**
- * Generates all permutations of a given list.
- */
-fun <T> List<T>.permutations(): List<List<T>> {
-    if (isEmpty()) return listOf(emptyList())
-    val result = mutableListOf<List<T>>()
-    val first = first()
-    val rest = drop(1)
-    val permutations = rest.permutations()
-    for (perm in permutations) {
-        for (i in 0..perm.size) {
-            val newPerm = perm.toMutableList().apply { add(i, first) }
-            result.add(newPerm)
-        }
-    }
-    return result
-}
 
-/**
- * Checks if a number is prime.
- */
-fun isPrime(number: Long): Boolean {
-    if (number <= 1) return false
-    for (i in 2..(number / 2)) {
-        if (number % i == 0L) {
-            return false
-        }
-    }
-    return true
-}
 
 /**
  * Calculates the greatest common divisor (GCD) of two numbers using Euclid's algorithm.
@@ -422,85 +165,380 @@ fun gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
  */
 fun lcm(a: Int, b: Int): Int = (a * b) / gcd(a, b)
 
-/**
- * Converts a string to title case (each word capitalized).
- */
-fun String.toTitleCase(): String = split(" ").joinToString(" ") { it.capitalize() }
-
-/**
- * Replaces multiple spaces in a string with a single space.
- */
-fun String.normalizeSpaces(): String = replace("\\s+".toRegex(), " ")
-
-/**
- * Calculates the median of a list of numbers.
- */
-fun List<Int>.median(): Double {
-    val sortedList = sorted()
-    val size = sortedList.size
-    return if (size % 2 == 0) {
-        (sortedList[size / 2 - 1] + sortedList[size / 2]) / 2.0
-    } else {
-        sortedList[size / 2].toDouble()
-    }
-}
-
-/**
- * Checks if all elements in a list are unique.
- */
-fun <T> List<T>.allUnique(): Boolean = toSet().size == size
-
-/**
- * Counts the occurrences of each element in a list.
- */
-fun <T> List<T>.countOccurrences(): Map<T, Int> = groupBy { it }.mapValues { it.value.size }
-
-/**
- * Finds the mode (most common element) in a list.
- */
-fun <T> List<T>.mode(): T? = countOccurrences().maxByOrNull { it.value }?.key
-
-/**
- * Checks if a number is even.
- */
-fun Int.isEven(): Boolean = this % 2 == 0
-
-/**
- * Checks if a number is odd.
- */
-fun Int.isOdd(): Boolean = this % 2 != 0
-
-/**
- * Finds the first non-repeating character in a string.
- */
-fun String.firstNonRepeatingChar(): Char? = this.groupBy { it }.entries.firstOrNull { it.value.size == 1 }?.key
-
-/**
- * Counts the number of vowels in a string.
- */
-fun String.countVowels(): Int = count { it.toLowerCase() in "aeiou" }
-
-
-fun emptyString() = ""
-
-fun <T> T.toList(): List<T> {
-    return listOf(this)
-}
-
-fun Int.random(): Int {
-    return (1..this).random()
-}
 
 fun floatRandom(min: Float, max: Float): Float {
     val randomValue = Random.nextFloat() * (max - min) + min
     return round(randomValue * 10) / 10
 }
 
+/**
+ * Retries the given block up to [times] if it throws an exception.
+ * @param times The number of times to retry.
+ * @param block The block of code to retry.
+ */
+inline fun <T> retry(times: Int, block: () -> T): T? {
+    var currentAttempt = 0
+    while (currentAttempt < times) {
+        try {
+            return block()
+        } catch (e: Exception) {
+            currentAttempt++
+        }
+    }
+    return null
+}
 
-fun <T> List<T>.randomItems(count: Int): List<T> {
-    return if (count >= size) {
-        this.shuffled() // If requested count is larger or equal to the list size, shuffle and return
-    } else {
-        this.shuffled().take(count) // Shuffle the list and return the first 'count' items
+/**
+ * Converts a nullable boolean to false if it's null.
+ */
+fun Boolean?.orFalse(): Boolean {
+    return this ?: false
+}
+
+/**
+ * Converts a nullable boolean to true if it's null.
+ */
+fun Boolean?.orTrue(): Boolean {
+    return this ?: true
+}
+
+/**
+ * Measures and prints the time taken by a block to execute.
+ */
+inline fun <T> measureExecutionTime(tag: String = "ExecutionTime", block: () -> T): T {
+    val start = System.currentTimeMillis()
+    val result = block()
+    val end = System.currentTimeMillis()
+    val time = "$tag took ${end - start}ms"
+    println(time)
+    time.logInline("ExecutionTime")
+    return result
+}
+
+/**
+ * Executes the block if all specified keys in the map have non-null values.
+ */
+inline fun <K, V, R> Map<K, V?>.withNonNullValues(keys: List<K>, block: (Map<K, V>) -> R): R? {
+    val nonNullValues = keys.mapNotNull { key -> this[key]?.let { key to it } }.toMap()
+    return if (nonNullValues.size == keys.size) block(nonNullValues) else null
+}
+
+/**
+ * Limits the length of a string, appending an ellipsis if the limit is exceeded.
+ */
+fun String.limitLength(maxLength: Int, ellipsis: String = "..."): String {
+    return if (this.length > maxLength) this.take(maxLength) + ellipsis else this
+}
+
+
+/**
+ * Repeatedly runs a block until the condition is met.
+ */
+inline fun runUntil(condition: () -> Boolean, block: () -> Unit) {
+    while (!condition()) {
+        block()
     }
 }
+
+/**
+ * Executes the block if the value has changed since the last check.
+ */
+class ValueTracker<T>(private var value: T) {
+    fun onValueChange(newValue: T, action: (T) -> Unit) {
+        if (newValue != value) {
+            value = newValue
+            action(newValue)
+        }
+    }
+}
+
+/**
+ * Executes the block if any element in the collection is null.
+ */
+inline fun <T> Collection<T?>.ifAnyIsNull(block: () -> Unit) {
+    if (any { it == null }) {
+        block()
+    }
+}
+
+/**
+ * Filters the collection using multiple predicates.
+ */
+fun <T> Iterable<T>.filterWithPredicates(vararg predicates: (T) -> Boolean): List<T> {
+    return this.filter { item -> predicates.all { it(item) } }
+}
+
+/**
+ * Executes different blocks based on the type of the object.
+ */
+inline fun <reified T> Any.runIfTypeMatches(block: (T) -> Unit) {
+    if (this is T) {
+        block(this)
+    }
+}
+
+/**
+ * Ensures that the block is executed only once.
+ */
+inline fun runOnce(crossinline block: () -> Unit): () -> Unit {
+    var isExecuted = false
+    return {
+        if (!isExecuted) {
+            block()
+            isExecuted = true
+        }
+    }
+}
+
+/**
+ * Lazily evaluates multiple blocks and runs the first one whose condition is true.
+ */
+fun lazyEvaluate(vararg blocks: Pair<Boolean, () -> Unit>) {
+    for ((condition, block) in blocks) {
+        if (condition) {
+            block()
+            return
+        }
+    }
+}
+
+/**
+ * Executes a block when an element is removed from the list.
+ */
+inline fun <T> MutableList<T>.onRemove(crossinline block: (T) -> Unit): MutableList<T> {
+    return object : MutableList<T> by this {
+        override fun remove(element: T): Boolean {
+            val result = this@onRemove.remove(element)
+            if (result) block(element)
+            return result
+        }
+    }
+}
+
+/**
+ * Executes a block after adding or removing elements from the collection.
+ */
+inline fun <T> MutableCollection<T>.onModification(crossinline block: () -> Unit): MutableCollection<T> {
+    return object : MutableCollection<T> by this {
+        override fun add(element: T): Boolean {
+            val result = this@onModification.add(element)
+            block()
+            return result
+        }
+
+        override fun remove(element: T): Boolean {
+            val result = this@onModification.remove(element)
+            block()
+            return result
+        }
+    }
+}
+
+/**
+ * Transforms a pair into a new instance of another type.
+ */
+inline fun <A, B, R> Pair<A, B>.mapTo(transform: (A, B) -> R): R {
+    return transform(first, second)
+}
+
+
+/**
+ * Toggles the Boolean value.
+ */
+fun Boolean.toggle(): Boolean = !this
+
+
+/**
+ * Inline function to capture a reified generic type.
+ */
+inline fun <reified T> classOf(): Class<T> = T::class.java
+
+
+/**
+ * Retries an operation with exponential backoff.
+ *
+ * val result = retryWithBackoff {
+ *     // Some potentially failing operation
+ *     println("Attempting operation...")
+ *     if (Math.random() > 0.5) {
+ *         throw Exception("Failed attempt!")
+ *     }
+ *     "Success!"
+ * }
+ *
+ * println(result) // Retries with backoff on failure
+ *
+ */
+inline fun <T> kompnaionRetryWithBackoff(
+    initialDelay: Long = 1000L,
+    maxRetries: Int = 3,
+    factor: Double = 2.0,
+    operation: () -> T
+): T {
+    var currentDelay = initialDelay
+    repeat(maxRetries - 1) {
+        try {
+            return operation()
+        } catch (e: Exception) {
+            Thread.sleep(currentDelay)
+            currentDelay = (currentDelay * factor).toLong()
+        }
+    }
+    return operation() // Final attempt without catching
+}
+
+
+/**
+ * Memoizes a function with cache expiration after a specified timeout.
+ */
+fun <T, R> ((T) -> R).memoizeWithExpiry(timeout: Long, unit: TimeUnit): (T) -> R {
+    val cache = ConcurrentHashMap<T, Pair<R, Long>>()
+    val expiryTime = unit.toMillis(timeout)
+
+    return { input: T ->
+        val currentTime = System.currentTimeMillis()
+        cache[input]?.takeIf { currentTime - it.second < expiryTime }?.first ?: run {
+            val result = this(input)
+            cache[input] = result to currentTime
+            result
+        }
+    }
+}
+
+/**
+ * Debounces a function, preventing it from being called too frequently.
+ *
+ * val debouncedPrint = { msg: String -> println(msg) }.debounce(1000L)
+ *
+ * debouncedPrint("First call")  // Prints
+ * debouncedPrint("Second call") // Ignored if within 1 second of the first
+ *
+ */
+fun <T> ((T) -> Unit).kompanionDebounce(waitMs: Long): (T) -> Unit {
+    var lastInvocation = 0L
+    return { param: T ->
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastInvocation >= waitMs) {
+            lastInvocation = currentTime
+            this(param)
+        }
+    }
+}
+
+
+/**
+ * Rate limits a function to only allow execution every `intervalMs` milliseconds.
+ *
+ * val rateLimitedPrint = { msg: String -> println(msg) }.rateLimit(1000L)
+ *
+ * rateLimitedPrint("First")  // Prints
+ * rateLimitedPrint("Second") // Ignored if within 1 second of first call
+ *
+ */
+fun <T> ((T) -> Unit).kompanionRateLimit(intervalMs: Long): (T) -> Unit {
+    var lastInvocation = 0L
+
+    return { param: T ->
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastInvocation >= intervalMs) {
+            lastInvocation = currentTime
+            this(param)
+        }
+    }
+}
+
+/**
+ * Throttles a suspending function to only allow execution once per `intervalMs` milliseconds.
+ *
+ * val throttledPrint = { msg: String -> println(msg) }.throttle(1000L)
+ *
+ * throttledPrint("First call")  // Prints
+ * throttledPrint("Second call") // Ignored if within 1 second of the first
+ *
+ */
+fun <T> ((T) -> Unit).throttle(intervalMs: Long): (T) -> Unit {
+    var lastInvocation = 0L
+    val lock = Any()
+
+    return { param: T ->
+        synchronized(lock) {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastInvocation >= intervalMs) {
+                lastInvocation = currentTime
+                this(param)
+            }
+        }
+    }
+}
+
+/**
+ * Coroutine version of throttle for suspending functions.
+ *
+ * val throttledPrintCoroutine = { msg: String -> println(msg) }.throttleCoroutine(1000L)
+ *
+ * runBlocking {
+ *     throttledPrintCoroutine("First coroutine call")
+ *     throttledPrintCoroutine("Second coroutine call")
+ * }
+ *
+ */
+fun <T> ((T) -> Unit).kompanionthrottleCoroutine(intervalMs: Long): suspend (T) -> Unit {
+    var lastInvocation = 0L
+    val lock = Any()
+
+    return { param: T ->
+        synchronized(lock) {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastInvocation >= intervalMs) {
+                lastInvocation = currentTime
+                this(param)
+            }
+        }
+    }
+}
+
+
+/**
+ * Handles behavior based on the state.
+ *
+ * val currentState = KompanionState.LOADING
+ *
+ * currentState.handleState(
+ *     onIdle = { println("Currently idle") },
+ *     onLoading = { println("Loading...") },
+ *     onSuccess = { println("Operation successful!") },
+ *     onError = { println("An error occurred") }
+ * )
+ *
+ */
+enum class KompanionState {
+    IDLE, LOADING, SUCCESS, ERROR
+}
+
+/**
+ * Handles behavior based on the state.
+ *
+ * val currentState = KompanionState.LOADING
+ *
+ * currentState.handleState(
+ *     onIdle = { println("Currently idle") },
+ *     onLoading = { println("Loading...") },
+ *     onSuccess = { println("Operation successful!") },
+ *     onError = { println("An error occurred") }
+ * )
+ *
+ */
+inline fun KompanionState.handleState(
+    onIdle: () -> Unit = {},
+    onLoading: () -> Unit = {},
+    onSuccess: () -> Unit = {},
+    onError: () -> Unit = {}
+) {
+    when (this) {
+        KompanionState.IDLE -> onIdle()
+        KompanionState.LOADING -> onLoading()
+        KompanionState.SUCCESS -> onSuccess()
+        KompanionState.ERROR -> onError()
+    }
+}
+

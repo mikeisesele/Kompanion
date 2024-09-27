@@ -57,7 +57,9 @@ dependencies {
     implementation(libs.compose.foundation)
     implementation(libs.compose.ui.graphics)
     implementation(libs.easylog)
+    implementation(libs.kotlin.reflect)
 
     implementation(libs.compose.ui.tooling.preview)
     debugApi(libs.compose.ui.tooling)
+    implementation(kotlin("reflect"))
 }

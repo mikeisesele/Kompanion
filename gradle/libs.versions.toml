@@ -41,6 +41,7 @@ compose-foundation = { module = "androidx.compose.foundation:foundation", versio
 compose-foundation-layout = { module = "androidx.compose.foundation:foundation-layout", version.ref = "compose-version" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 
 # logging
 easylog = { group = "com.github.mikeisesele", name = "easylog", version.ref = "easylog" }

@@ -164,3 +164,21 @@ fun <T> Flow<T>.collectAsEffect(
 fun <T> List<T>.asFlow(): Flow<List<T>> =
     flow { emit(this@asFlow) }
         .distinctUntilChanged()
+
+/**
+ * Processes a list in batches using Kotlin Flow.
+ *
+ * runBlocking {
+ *     val data = listOf(1, 2, 3, 4, 5, 6)
+ *
+ *     data.batchProcessFlow(2).collect { batch ->
+ *         println("Processing batch: $batch")
+ *     }
+ * }
+ *
+ */
+fun <T> List<T>.batchProcessFlow(batchSize: Int): Flow<List<T>> = flow {
+    for (batch in this@batchProcessFlow.chunked(batchSize)) {
+        emit(batch)
+    }
+}

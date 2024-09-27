@@ -9,8 +9,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 
 
+
 @Composable
-fun boldTexStyle(size: Int, color: Color = Color.Black): TextStyle {
+fun TextStyle.boldTexStyle(size: Int, color: Color = Color.Black): TextStyle {
     return TextStyle(
         color = color,
         fontSize = size.sp,
@@ -19,11 +20,20 @@ fun boldTexStyle(size: Int, color: Color = Color.Black): TextStyle {
 }
 
 @Composable
-fun mediumTexStyle(size: Int, color: Color = Color.Black): TextStyle {
+fun TextStyle.mediumTexStyle(size: Int, color: Color = Color.Black): TextStyle {
     return TextStyle(
         color = color,
         fontSize = size.sp,
         fontWeight = FontWeight.Medium,
+    )
+}
+
+@Composable
+fun TextStyle.normalTexStyle(size: Int, color: Color = Color.Black): TextStyle {
+    return TextStyle(
+        color = color,
+        fontSize = size.sp,
+        fontWeight = FontWeight.Normal,
     )
 }
 
