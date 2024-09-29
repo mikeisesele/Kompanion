@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlinCompose)
+    id("maven-publish")
 }
 
 android {
@@ -37,6 +38,20 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.4"
+    }
+}
+
+publishing {
+    publications {
+        create("release", MavenPublication::class) {
+            groupId = "com.mikeisesele"
+            artifactId = "Kompanion"
+            version = "1.1.0"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
     }
 }
 
