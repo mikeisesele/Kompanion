@@ -318,7 +318,7 @@ fun Int.sumOfPrimeFactors(): Int {
 fun Int.isArmstrong(): Boolean {
     val digits = this.toString().map { it.toString().toInt() }
     val power = digits.size
-    return digits.sumBy { it.toDouble().pow(power).toInt() } == this
+    return digits.sumOf { it.toDouble().pow(power).toInt() } == this
 }
 
 /**
@@ -501,7 +501,7 @@ fun Int.isAutomorphic(): Boolean = (this * this).toString().endsWith(this.toStri
  */
 fun Int.isStrongNumber(): Boolean {
     val factorial = { n: Int -> (1..n).fold(1L) { acc, i -> acc * i } }
-    return this == this.toDigits().sumBy { factorial(it).toInt() }
+    return this == this.toDigits().sumOf { factorial(it).toInt() }
 }
 
 /**
@@ -580,6 +580,6 @@ fun Int.minDigit(): Int = this.toDigits().minOrNull() ?: 0
 /**
  * Calculates the sum of squares of the digits of the number.
  */
-fun Int.sumOfSquaresOfDigits(): Int = this.toDigits().sumBy { it * it }
+fun Int.sumOfSquaresOfDigits(): Int = this.toDigits().sumOf { it * it }
 
 

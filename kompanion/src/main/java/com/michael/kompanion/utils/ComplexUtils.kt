@@ -13,14 +13,16 @@ import kotlin.reflect.full.primaryConstructor
  * val person2 = Person("John", 25, listOf(Person("Doe", 30, emptyList())))
  *
  * println(deepEquals(person1, person2))  // Output: true
+ *
  */
-fun <T : Any> kompanionDeepEquals(obj1: T, obj2: T): Boolean {
+fun <T : Any> kompanionDeepEquals(obj1: T?, obj2: T?): Boolean {
+    if (obj1 == null || obj2 == null) return obj1 === obj2
     val kClass = obj1::class
     if (obj1::class != obj2::class) return false
 
     for (property in kClass.memberProperties) {
         val value1 = (property as KProperty1<T, *>).get(obj1)
-        val value2 = (property as KProperty1<T, *>).get(obj2)
+        val value2 = property.get(obj2)
 
         if (value1 is List<*> && value2 is List<*>) {
             if (!value1.zip(value2).all { (v1, v2) -> kompanionDeepEquals(v1, v2) }) return false
@@ -33,21 +35,6 @@ fun <T : Any> kompanionDeepEquals(obj1: T, obj2: T): Boolean {
     return true
 }
 
-
-/*
- * Deep equals for data classes using reflection.
- *
- * data class Person(val name: String, val age: Int, val friends: List<Person>)
- *
- * val person1 = Person("John", 25, listOf(Person("Doe", 30, emptyList())))
- * val person2 = Person("John", 25, listOf(Person("Doe", 30, emptyList())))
- *
- * println(deepEquals(person1, person2))  // Output: true
- */
-fun <T : Any> kompanionDeepEquals(obj1: T?, obj2: T?): Boolean {
-    if (obj1 == null || obj2 == null) return obj1 === obj2
-    return kompanionDeepEquals(obj1, obj2)
-}
 
 
 

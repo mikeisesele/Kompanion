@@ -35,7 +35,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 @Composable
 fun <T> rememberStateWithLifecycle(
     stateFlow: StateFlow<T>,
-    lifecycle: Lifecycle = LocalLifecycleOwner.current.lifecycle,
+    lifecycle: Lifecycle = androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
 ): State<T> {
     val initialValue = remember(stateFlow) {
