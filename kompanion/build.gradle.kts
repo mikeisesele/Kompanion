@@ -61,7 +61,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-//    implementation(libs.easylog)
+    implementation(libs.easylog)
 
     implementation(libs.kotlin.reflect)
     implementation(kotlin("reflect"))
