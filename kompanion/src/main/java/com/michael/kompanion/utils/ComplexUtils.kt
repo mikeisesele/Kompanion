@@ -1,3 +1,5 @@
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties
@@ -34,8 +36,6 @@ fun <T : Any> kompanionDeepEquals(obj1: T?, obj2: T?): Boolean {
     }
     return true
 }
-
-
 
 
 
@@ -118,3 +118,115 @@ fun (() -> Unit).kompanionToCommand(): Command {
 fun kompanionExecuteCommands(vararg commands: Command) {
     commands.forEach { it.execute() }
 }
+
+
+
+/**
+ * Memoizes a function with cache expiration after a specified timeout.
+ */
+fun <T, R> ((T) -> R).kompanionMemoizeWithExpiry(timeout: Long, unit: TimeUnit): (T) -> R {
+    val cache = ConcurrentHashMap<T, Pair<R, Long>>()
+    val expiryTime = unit.toMillis(timeout)
+
+    return { input: T ->
+        val currentTime = System.currentTimeMillis()
+        cache[input]?.takeIf { currentTime - it.second < expiryTime }?.first ?: run {
+            val result = this(input)
+            cache[input] = result to currentTime
+            result
+        }
+    }
+}
+
+/**
+ * Debounces a function, preventing it from being called too frequently.
+ *
+ * val debouncedPrint = { msg: String -> println(msg) }.debounce(1000L)
+ *
+ * debouncedPrint("First call")  // Prints
+ * debouncedPrint("Second call") // Ignored if within 1 second of the first
+ * (Same as kompanionRateLimit)
+ */
+fun <T> ((T) -> Unit).kompanionFunctionDebounce(waitMs: Long): (T) -> Unit {
+    var lastInvocation = 0L
+    return { param: T ->
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastInvocation >= waitMs) {
+            lastInvocation = currentTime
+            this(param)
+        }
+    }
+}
+
+
+/**
+ * Rate limits a function to only allow execution every `intervalMs` milliseconds.
+ *
+ * val rateLimitedPrint = { msg: String -> println(msg) }.rateLimit(1000L)
+ *
+ * rateLimitedPrint("First")  // Prints
+ * rateLimitedPrint("Second") // Ignored if within 1 second of first call
+ * (Same as kompanionFunctionDebounce)
+ */
+fun <T> ((T) -> Unit).kompanionRateLimit(intervalMs: Long): (T) -> Unit {
+    var lastInvocation = 0L
+
+    return { param: T ->
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastInvocation >= intervalMs) {
+            lastInvocation = currentTime
+            this(param)
+        }
+    }
+}
+
+/**
+ * Throttles a suspending function to only allow execution once per `intervalMs` milliseconds.
+ *
+ * val throttledPrint = { msg: String -> println(msg) }.throttle(1000L)
+ *
+ * throttledPrint("First call")  // Prints
+ * throttledPrint("Second call") // Ignored if within 1 second of the first
+ *
+ */
+fun <T> ((T) -> Unit).kompanionThrottle(intervalMs: Long): (T) -> Unit {
+    var lastInvocation = 0L
+    val lock = Any()
+
+    return { param: T ->
+        synchronized(lock) {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastInvocation >= intervalMs) {
+                lastInvocation = currentTime
+                this(param)
+            }
+        }
+    }
+}
+
+/**
+ * Coroutine version of throttle for suspending functions.
+ *
+ * val throttledPrintCoroutine = { msg: String -> println(msg) }.throttleCoroutine(1000L)
+ *
+ * runBlocking {
+ *     throttledPrintCoroutine("First coroutine call")
+ *     throttledPrintCoroutine("Second coroutine call")
+ * }
+ *
+ */
+fun <T> ((T) -> Unit).kompanionThrottleCoroutine(intervalMs: Long): suspend (T) -> Unit {
+    var lastInvocation = 0L
+    val lock = Any()
+
+    return { param: T ->
+        synchronized(lock) {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastInvocation >= intervalMs) {
+                lastInvocation = currentTime
+                this(param)
+            }
+        }
+    }
+}
+

@@ -1,5 +1,7 @@
 package com.michael.kompanion.utils
 
+import com.michael.easylog.logE
+import com.michael.easylog.logInline
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ensureActive
@@ -28,7 +30,7 @@ fun kompanionSafeOperation(
         operation.invoke()
     } catch (e: Exception) {
         //print stack trace
-        e.printStackTrace()
+        e.printStackTrace().logE("kompanionSafeOperation")
         // Invoke the optional actionOnException (cleanup or additional logging)
         actionOnException?.invoke(e)
     }
@@ -52,7 +54,7 @@ fun <T> kompanionSafeNullableReturnableOperation(
         operation.invoke()
     } catch (e: Exception) {
         // Print stack trace
-        e.printStackTrace()
+        e.printStackTrace().logE("kompanionSafeNullableReturnableOperation")
 
         // Invoke the optional actionOnException with the error message
         actionOnException?.invoke(e)
@@ -78,7 +80,7 @@ suspend fun <T> kompanionSafeSuspendOperation(
         operation.invoke()
     } catch (e: Exception) {
         //print stack trace
-        e.printStackTrace()
+        e.printStackTrace().logE("kompanionSafeSuspendOperation")
 
         // Invoke the optional actionOnException with the error message
         actionOnException?.invoke(e)
@@ -104,7 +106,7 @@ suspend fun <T> kompanionSafeReturnableSuspendOperation(
         operation.invoke()
     } catch (e: Exception) {
         //print stack trace
-        e.printStackTrace()
+        e.printStackTrace().logE("kompanionSafeReturnableSuspendOperation")
 
         // Invoke the optional actionOnException with the error message
         actionOnException?.invoke(e)
@@ -112,32 +114,46 @@ suspend fun <T> kompanionSafeReturnableSuspendOperation(
         // Return null in case of an exception
         null
     }
-}
-
+}/**
+ * Safely executes a suspend operation within a Flow by wrapping it in a try-catch block.
+ *
+ * @param operation The suspend operation to be executed, returning a nullable result.
+ * @param actionOnException An optional action to be executed in case of an exception.
+ *                          It takes an Exception parameter and is typically used for cleanup or logging.
+ * @param dispatcher The CoroutineDispatcher that the flow will operate on.
+ * @return A Flow emitting the result of the operation or null in case of an exception.
+ */
 suspend fun <T> kompanionSafeFlowReturnableOperation(
     operation: suspend () -> T?,
     actionOnException: ((message: Exception?) -> Unit)? = null,
     dispatcher: CoroutineDispatcher
 ): Flow<T?> = flow {
-    try {
-        emit(operation.invoke())
-    } catch (e: Exception) {
-        coroutineContext.ensureActive()
+        try {
+            emit(operation.invoke())
+        } catch (e: Exception) {
+            coroutineContext.ensureActive()
 
-//        if (e is CancellationException) throw e <- this will cancel the flow or use this
+            // Print stack trace
+            e.printStackTrace().logE("kompanionSafeFlowReturnableOperation")
 
-        // Print stack trace
-        e.printStackTrace()
+            // Invoke the optional actionOnException with the error message
+            actionOnException?.invoke(e)
 
-        // Invoke the optional actionOnException with the error message
-        actionOnException?.invoke(e)
+            // Emit null in case of an exception
+            emit(null)
+        }
+    }.flowOn(dispatcher)
 
-        // Emit null in case of an exception
-        emit(null)
-    }
-}.flowOn(dispatcher)
-
-
+/**
+ * Handles a Flow operation, collecting the first emitted item and processing it in the provided CoroutineScope.
+ *
+ * @param onStart Lambda function invoked before starting the Flow collection.
+ * @param onItemReceived Lambda function invoked when the first item is received from the Flow.
+ *                       The item is provided as an argument to the lambda.
+ * @param onError Lambda function invoked when an error occurs during Flow collection.
+ *                The Throwable is provided as an argument to the lambda.
+ * @param coroutineScope The CoroutineScope where the onItemReceived lambda is launched.
+ */
 suspend fun <T : Any?> Flow<T>.kompanionSingleFlowOnItemReceivedInScope(
     onStart: () -> Unit = {},
     onItemReceived: suspend (T) -> Unit = { _ -> },

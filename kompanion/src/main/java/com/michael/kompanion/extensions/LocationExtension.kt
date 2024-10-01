@@ -5,16 +5,16 @@ import kotlin.random.Random
 import kotlin.math.*
 
 
-fun Location.toMapUrl(): String {
+fun Location.kompanionToMapUrl(): String {
     return "https://maps.google.com/maps?q=${latitude},${longitude}"
 }
 
 /**
  * Converts degrees to radians.
  */
-fun Double.toRadians(): Double = Math.toRadians(this)
+fun Double.kompanionToRadians(): Double = Math.toRadians(this)
 
 /**
  * Converts radians to degrees.
  */
-fun Double.toDegrees(): Double = Math.toDegrees(this)
+fun Double.kompanionToDegrees(): Double = Math.toDegrees(this)

@@ -8,6 +8,14 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 
+sealed class KompanionResource<out T> {
+    data object Loading : KompanionResource<Nothing>()
+    data class Success<T>(val data: T) : KompanionResource<T>()
+    data class Error(val message: String) : KompanionResource<Nothing>()
+    data class Failure(val exception: Any) : KompanionResource<Nothing>()
+}
+
+
 /**
  * A suspend function that handles different states of a Resource using a Flow if using a resource from the repository.
  *
@@ -18,7 +26,7 @@ import kotlinx.coroutines.flow.map
  * @param onError A lambda function called on Resource.ServerError.
  */
 suspend inline fun <reified T> kompanionHandleFlowResourceStates(
-    resource: Flow<Resource<T>>?,
+    resource: Flow<KompanionResource<T>>?,
     crossinline onSuccess: (T) -> Unit = {},
     crossinline onFailure: (Exception) -> Unit = {},
     crossinline onLoading: () -> Unit = {},
@@ -26,75 +34,114 @@ suspend inline fun <reified T> kompanionHandleFlowResourceStates(
 ) {
     resource?.distinctUntilChanged()?.collect {
         when (it) {
-            is Resource.Success -> onSuccess(it.data)
-            is Resource.Loading -> onLoading()
-            is Resource.Failure -> {
+            is KompanionResource.Success -> onSuccess(it.data)
+            is KompanionResource.Loading -> onLoading()
+            is KompanionResource.Failure -> {
                 val exception = it.exception
                 if (exception is Exception) {
                     onFailure(exception)
                 } else {
-                    onFailure(Exception())
+                    onFailure(Exception("Something went wrong"))
                 }
             }
-            is Resource.Error -> onError(it.message)
+            is KompanionResource.Error -> onError(it.message)
         }
     }
 }
 
-
+/**
+ * A suspend function that handles different states of a Resource if using a resource from the repository.
+ *
+ * @param resource A Resource of states (Success, Loading, Failure, ServerError).
+ * @param onSuccess A lambda function called on Resource.Success with the success data.
+ * @param onFailure A lambda function called on Resource.Failure.
+ * @param onLoading A lambda function called on Resource.Loading.
+ * @param onError A lambda function called on Resource.ServerError.
+ */
 
 suspend inline fun <reified T> kompanionHandleResourceStates(
-    resource: Resource<T>?,
+    resource: KompanionResource<T>,
     crossinline onSuccess: (T) -> Unit = {},
     crossinline onFailure: (Exception) -> Unit = {},
     crossinline onLoading: () -> Unit = {},
     crossinline onError: (String) -> Unit = {}
 ) {
     when (resource) {
-        is Resource.Success -> onSuccess(resource.data)
-        is Resource.Loading -> onLoading()
-        is Resource.Failure -> onFailure(resource.exception as Exception)
-        is Resource.Error -> onError(resource.message)
-        null -> {}
+        is KompanionResource.Success -> onSuccess(resource.data)
+        is KompanionResource.Loading -> onLoading()
+        is KompanionResource.Failure -> onFailure(resource.exception as Exception)
+        is KompanionResource.Error -> onError(resource.message)
     }
 }
-
-/*
-    call this on any flow to wrap the result into a resource success
-    see usage in any repositoryImpl
+/**
+ * Extension function to wrap any Flow into a success state resource.
+ * Converts each emitted value of the flow into a KompanionResource.Success object.
+ *
+ * @return Flow emitting success resources of type T.
  */
-fun <T> Flow<T>.asSuccess(): Flow<Resource<T>> =
-    map { Resource.Success(it) }.distinctUntilChanged()
+fun <T> Flow<T>.kompanionAsSuccessFlowResource(): Flow<KompanionResource<T>> =
+    map { KompanionResource.Success(it) }.distinctUntilChanged()
 
-fun <T> Flow<Resource<T>>.unwrap(): Flow<T> =
-    filterIsInstance<Resource.Success<T>>().map { it.data }
+/**
+ * Extension function to unwrap a Flow of KompanionResource to extract the success data.
+ * Filters out only the Success states and maps them to their data values.
+ *
+ * @return Flow emitting the data from KompanionResource.Success.
+ */
+fun <T> Flow<KompanionResource<T>>.kompanionUnwrap(): Flow<T> =
+    filterIsInstance<KompanionResource.Success<T>>().map { it.data }
 
-
-fun <T> T.asSuccessFlow(): Flow<Resource<T>> =
-    flow { emit(Resource.Success(this@asSuccessFlow)) }
+/**
+ * Extension function to convert an object of type T into a Flow emitting a success state resource.
+ *
+ * @return Flow emitting a KompanionResource.Success object containing this instance of type T.
+ */
+fun <T> T.kompanionToSuccessFlowResource(): Flow<KompanionResource<T>> =
+    flow { emit(KompanionResource.Success(this@kompanionToSuccessFlowResource)) }
         .distinctUntilChanged()
 
-fun <T> T.asFlow(): Flow<T> = flowOf(this)
+/**
+ * Extension function to convert an object of type T into a Flow of that object.
+ *
+ * @return Flow emitting this instance of type T.
+ */
+fun <T> T.kompanionToFlow(): Flow<T> = flowOf(this)
     .distinctUntilChanged()
 
-fun <T> T.asErrorFlow(message: String): Flow<Resource<T>> =
-    flow { emit(Resource.Error(message)) }
+/**
+ * Extension function to convert an object of type T into a Flow emitting an error state resource.
+ * The resource will carry an error message.
+ *
+ * @param message The error message to emit with the error resource.
+ * @return Flow emitting a KompanionResource.Error object containing the error message.
+ */
+fun <T> T.kompanionToErrorFlowResource(message: String): Flow<KompanionResource<T>> =
+    flow { emit(KompanionResource.Error(message)) }
         .distinctUntilChanged()
 
-fun <T> T.asSuccess(): Resource<T> = Resource.Success(this)
+/**
+ * Extension function to convert an object of type T into a success state resource.
+ *
+ * @return KompanionResource.Success object containing this instance of type T.
+ */
+fun <T> T.kompanionAsSuccessResource(): KompanionResource<T> = KompanionResource.Success(this)
 
-fun <T> T.asError(message: String): Resource<T> = Resource.Error(message)
+/**
+ * Extension function to convert an object of type T into an error state resource.
+ * The resource will carry an error message.
+ *
+ * @param message The error message to emit with the error resource.
+ * @return KompanionResource.Error object containing the error message.
+ */
+fun <T> T.kompanionAsErrorResource(message: String): KompanionResource<T> = KompanionResource.Error(message)
 
-fun <T> Flow<T>.asError(message: String): Flow<Resource<T>> =
-    map { Resource.Error(message) }
+/**
+ * Extension function to convert a Flow of type T into a Flow emitting error state resources.
+ * The resource will carry an error message.
+ *
+ * @param message The error message to emit with the error resource.
+ * @return Flow emitting KompanionResource.Error objects containing the error message.
+ */
+fun <T> Flow<T>.kompanionAsErrorFlowResource(message: String): Flow<KompanionResource<T>> =
+    map { KompanionResource.Error(message) }
         .distinctUntilChanged()
-
-
-
-
-sealed class Resource<out T> {
-    data object Loading : Resource<Nothing>()
-    data class Success<T>(val data: T) : Resource<T>()
-    data class Error(val message: String) : Resource<Nothing>()
-    data class Failure(val exception: Any) : Resource<Nothing>()
-}

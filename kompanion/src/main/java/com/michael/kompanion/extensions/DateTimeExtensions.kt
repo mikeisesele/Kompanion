@@ -14,43 +14,171 @@ import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+//
+//// Extension function to convert date string to readable format
+//@RequiresApi(Build.VERSION_CODES.O)
+//fun String.kompanionToReadableDate(): String {
+//    // Define the input format (yyyy-MM-dd HH:mm:ss)
+//    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+//    // Parse the string to a LocalDateTime object
+//    val dateTime = LocalDateTime.parse(this, inputFormatter)
+//
+//    // Define the output format (d MMMM yyyy)
+//    val outputFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.getDefault())
+//
+//    // Return the formatted date string
+//    return dateTime.format(outputFormatter)
+//}
+//
+//
+//fun Date.kompanionFormatToString(format: String): String {
+//    val formatter = SimpleDateFormat(format, Locale.getDefault())
+//    return formatter.format(this)
+//}
+//
+//fun String.kompanionToDate(format: String): Date? {
+//
+//    val formatter = SimpleDateFormat(format, Locale.getDefault())
+//
+//    return kompanionSafeNullableReturnableOperation(
+//        operation = {
+//            formatter.parse(this)
+//        },
+//        actionOnException = {
+//            it?.printStackTrace()
+//        },
+//    )
+//}
+//
+//fun Date.kompanionIsToday(): Boolean {
+//    val today = Calendar.getInstance()
+//    val date = Calendar.getInstance()
+//    date.time = this
+//    return today.get(Calendar.YEAR) == date.get(Calendar.YEAR) &&
+//            today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR)
+//}
+//
+//
+//@RequiresApi(Build.VERSION_CODES.O)
+//fun ZonedDateTime?.kompanionIsWithinDaysFromToday(days: Long): Boolean = this?.let {
+//    val currentTime = ZonedDateTime.now(ZoneId.systemDefault())
+//    it.isAfter(currentTime.minusDays(days)) && it.kompanionIsBeforeOrEqual(currentTime)
+//} ?: false
+//
+//@RequiresApi(Build.VERSION_CODES.O)
+//fun ZonedDateTime.kompanionIsBeforeOrEqual(other: ZonedDateTime): Boolean = isBefore(other) || isEqual(other)
+//
+//
+//@RequiresApi(Build.VERSION_CODES.O)
+//fun LocalDateTime.kompanionToReadable(): String {
+//    val date = LocalDate.now()
+//
+//    val day = when {
+//        this.year == date.year && this.dayOfYear == date.dayOfYear -> {
+//            "Today"
+//        }
+//
+//        this.year == date.year && this.dayOfYear == date.dayOfYear - 1 -> {
+//            "Yesterday"
+//        }
+//
+//        else -> {
+//            "${this.dayOfWeek}"
+//        }
+//    }
+//
+//    val hour = if (this.hour > 12) {
+//        this.hour - 12
+//    } else {
+//        this.hour
+//    }
+//
+//    val minute = if (this.minute < 10) {
+//        "0${this.minute}"
+//    } else {
+//        this.minute
+//    }
+//
+//    val amPm = if (this.hour >= 12) {
+//        "PM"
+//    } else {
+//        "AM"
+//    }
+//
+//    return "$day: $hour:$minute $amPm"
+//}
+//
+//@RequiresApi(Build.VERSION_CODES.O)
+//fun LocalDateTime.kompanionToReadableWeekDay(): String {
+//    val today = LocalDate.now()
+//
+//    return when {
+//        this.year == today.year && this.dayOfYear == today.dayOfYear -> {
+//            "Today"
+//        }
+//        this.year == today.year && this.dayOfYear == today.dayOfYear - 1 -> {
+//            "Yesterday"
+//        }
+//        else -> {
+//            "${this.dayOfWeek}, ${this.month} ${this.dayOfMonth}, ${this.year}"
+//        }
+//    }
+//}
+//
+//@RequiresApi(Build.VERSION_CODES.O)
+//fun LocalDateTime.kompanionToReadableTime(): String {
+//    val hour = if (this.hour > 12) {
+//        this.hour - 12
+//    } else {
+//        this.hour
+//    }
+//
+//    val minute = if (this.minute < 10) {
+//        "0${this.minute}"
+//    } else {
+//        this.minute.toString()
+//    }
+//
+//    val amPm = if (this.hour >= 12) {
+//        "PM"
+//    } else {
+//        "AM"
+//    }
+//
+//    return "$hour:$minute $amPm"
+//}
 
-// Extension function to convert date string to readable format
+
+// Converts a date string in the format "yyyy-MM-dd HH:mm:ss" to a more readable format "dd MMMM yyyy".
+// Requires API level 26 (Android O) or above as it uses LocalDateTime and DateTimeFormatter.
 @RequiresApi(Build.VERSION_CODES.O)
-fun String.toReadableDate(): String {
-    // Define the input format (yyyy-MM-dd HH:mm:ss)
+fun String.kompanionToReadableDate(): String {
     val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-    // Parse the string to a LocalDateTime object
     val dateTime = LocalDateTime.parse(this, inputFormatter)
-
-    // Define the output format (d MMMM yyyy)
     val outputFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.getDefault())
-
-    // Return the formatted date string
     return dateTime.format(outputFormatter)
 }
 
-
-fun Date.formatToString(format: String): String {
+// Converts a Date object into a formatted string based on the provided format.
+// The format follows the SimpleDateFormat patterns (e.g., "dd/MM/yyyy").
+fun Date.kompanionFormatToString(format: String): String {
     val formatter = SimpleDateFormat(format, Locale.getDefault())
     return formatter.format(this)
 }
 
-fun String.toDate(format: String): Date? {
-
+// Parses a string into a Date object based on the specified format.
+// Returns null if parsing fails and logs the exception.
+fun String.kompanionToDate(format: String): Date? {
     val formatter = SimpleDateFormat(format, Locale.getDefault())
-
     return kompanionSafeNullableReturnableOperation(
-        operation = {
-            formatter.parse(this)
-        },
-        actionOnException = {
-            it?.printStackTrace()
-        },
+        operation = { formatter.parse(this) },
+        actionOnException = { it?.printStackTrace() }
     )
 }
 
-fun Date.isToday(): Boolean {
+// Checks if the current Date object represents today's date.
+// Compares both the year and day of the year to determine if the date is today.
+fun Date.kompanionIsToday(): Boolean {
     val today = Calendar.getInstance()
     val date = Calendar.getInstance()
     date.time = this
@@ -58,96 +186,64 @@ fun Date.isToday(): Boolean {
             today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR)
 }
 
-
+// Checks if a ZonedDateTime is within a specified number of days from today.
+// Returns false if the ZonedDateTime is null. Requires API level 26 (Android O) or above.
 @RequiresApi(Build.VERSION_CODES.O)
-fun ZonedDateTime?.isWithinDaysFromToday(days: Long): Boolean = this?.let {
+fun ZonedDateTime?.kompanionIsWithinDaysFromToday(days: Long): Boolean = this?.let {
     val currentTime = ZonedDateTime.now(ZoneId.systemDefault())
-    it.isAfter(currentTime.minusDays(days)) && it.isBeforeOrEqual(currentTime)
+    it.isAfter(currentTime.minusDays(days)) && it.kompanionIsBeforeOrEqual(currentTime)
 } ?: false
 
+// Checks if the current ZonedDateTime is before or equal to another ZonedDateTime.
+// Requires API level 26 (Android O) or above.
 @RequiresApi(Build.VERSION_CODES.O)
-fun ZonedDateTime.isBeforeOrEqual(other: ZonedDateTime): Boolean = isBefore(other) || isEqual(other)
+fun ZonedDateTime.kompanionIsBeforeOrEqual(other: ZonedDateTime): Boolean =
+    isBefore(other) || isEqual(other)
 
-
+// Converts a LocalDateTime object to a human-readable format indicating whether the date is
+// today, yesterday, or provides the name of the day (e.g., "Monday"). It also formats the time
+// in 12-hour format with AM/PM. Requires API level 26 (Android O) or above.
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.toReadable(): String {
+fun LocalDateTime.kompanionToReadable(): String {
     val date = LocalDate.now()
 
     val day = when {
-        this.year == date.year && this.dayOfYear == date.dayOfYear -> {
-            "Today"
-        }
-
-        this.year == date.year && this.dayOfYear == date.dayOfYear - 1 -> {
-            "Yesterday"
-        }
-
-        else -> {
-            "${this.dayOfWeek}"
-        }
+        this.year == date.year && this.dayOfYear == date.dayOfYear -> "Today"
+        this.year == date.year && this.dayOfYear == date.dayOfYear - 1 -> "Yesterday"
+        else -> "${this.dayOfWeek}"
     }
 
-    val hour = if (this.hour > 12) {
-        this.hour - 12
-    } else {
-        this.hour
-    }
-
-    val minute = if (this.minute < 10) {
-        "0${this.minute}"
-    } else {
-        this.minute
-    }
-
-    val amPm = if (this.hour >= 12) {
-        "PM"
-    } else {
-        "AM"
-    }
+    val hour = if (this.hour > 12) this.hour - 12 else this.hour
+    val minute = if (this.minute < 10) "0${this.minute}" else this.minute
+    val amPm = if (this.hour >= 12) "PM" else "AM"
 
     return "$day: $hour:$minute $amPm"
 }
 
+// Returns a readable string representation of the LocalDateTime, showing whether it's
+// today, yesterday, or giving the full date in the format of "DayOfWeek, Month Day, Year".
+// Requires API level 26 (Android O) or above.
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.toReadableWeekDay(): String {
+fun LocalDateTime.kompanionToReadableWeekDay(): String {
     val today = LocalDate.now()
 
     return when {
-        this.year == today.year && this.dayOfYear == today.dayOfYear -> {
-            "Today"
-        }
-        this.year == today.year && this.dayOfYear == today.dayOfYear - 1 -> {
-            "Yesterday"
-        }
-        else -> {
-            "${this.dayOfWeek}, ${this.month} ${this.dayOfMonth}, ${this.year}"
-        }
+        this.year == today.year && this.dayOfYear == today.dayOfYear -> "Today"
+        this.year == today.year && this.dayOfYear == today.dayOfYear - 1 -> "Yesterday"
+        else -> "${this.dayOfWeek}, ${this.month} ${this.dayOfMonth}, ${this.year}"
     }
 }
 
+// Converts a LocalDateTime object to a readable time string in 12-hour format
+// with AM/PM (e.g., "10:30 AM"). Requires API level 26 (Android O) or above.
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.toReadableTime(): String {
-    val hour = if (this.hour > 12) {
-        this.hour - 12
-    } else {
-        this.hour
-    }
-
-    val minute = if (this.minute < 10) {
-        "0${this.minute}"
-    } else {
-        this.minute.toString()
-    }
-
-    val amPm = if (this.hour >= 12) {
-        "PM"
-    } else {
-        "AM"
-    }
+fun LocalDateTime.kompanionToReadableTime(): String {
+    val hour = if (this.hour > 12) this.hour - 12 else this.hour
+    val minute = if (this.minute < 10) "0${this.minute}" else this.minute.toString()
+    val amPm = if (this.hour >= 12) "PM" else "AM"
 
     return "$hour:$minute $amPm"
 }
-
 
 /**
  * Converts LocalDate to a formatted string.
@@ -155,7 +251,7 @@ fun LocalDateTime.toReadableTime(): String {
  * @return The formatted date string.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDate.formatToString(pattern: String): String {
+fun LocalDate.kompanionFormatToString(pattern: String): String {
     val formatter = DateTimeFormatter.ofPattern(pattern)
     return this.format(formatter)
 }
@@ -166,7 +262,7 @@ fun LocalDate.formatToString(pattern: String): String {
  * @return A new LocalDate instance.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDate.addDays(days: Long): LocalDate {
+fun LocalDate.kompanionAddDays(days: Long): LocalDate {
     return this.plusDays(days)
 }
 
@@ -175,7 +271,7 @@ fun LocalDate.addDays(days: Long): LocalDate {
  * @return True if it is today, otherwise false.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDate.isToday(): Boolean {
+fun LocalDate.kompanionIsToday(): Boolean {
     return this.isEqual(LocalDate.now())
 }
 
@@ -184,7 +280,7 @@ fun LocalDate.isToday(): Boolean {
  * @return True if in the past, otherwise false.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDate.isInPast(): Boolean {
+fun LocalDate.kompanionIsInPast(): Boolean {
     return this.isBefore(LocalDate.now())
 }
 
@@ -196,7 +292,7 @@ fun LocalDate.isInPast(): Boolean {
  * @return The formatted date string.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.formatToString(pattern: String): String {
+fun LocalDateTime.kompanionFormatToString(pattern: String): String {
     val formatter = DateTimeFormatter.ofPattern(pattern)
     return this.format(formatter)
 }
@@ -207,7 +303,7 @@ fun LocalDateTime.formatToString(pattern: String): String {
  * @return A new LocalDateTime instance.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.addDays(days: Long): LocalDateTime {
+fun LocalDateTime.kompanionAddDays(days: Long): LocalDateTime {
     return this.plusDays(days)
 }
 
@@ -216,7 +312,7 @@ fun LocalDateTime.addDays(days: Long): LocalDateTime {
  * @return True if in the past, otherwise false.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.isInPast(): Boolean {
+fun LocalDateTime.kompanionIsInPast(): Boolean {
     return this.isBefore(LocalDateTime.now())
 }
 
@@ -225,7 +321,7 @@ fun LocalDateTime.isInPast(): Boolean {
  * @return The corresponding LocalDateTime.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun Date.toLocalDateTime(): LocalDateTime {
+fun Date.kompanionToLocalDateTime(): LocalDateTime {
     return LocalDateTime.ofInstant(this.toInstant(), java.time.ZoneId.systemDefault())
 }
 
@@ -234,7 +330,7 @@ fun Date.toLocalDateTime(): LocalDateTime {
  * @return The corresponding LocalDate.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun Date.toLocalDate(): LocalDate {
+fun Date.kompanionToLocalDate(): LocalDate {
     return this.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate()
 }
 
@@ -245,7 +341,7 @@ fun Date.toLocalDate(): LocalDate {
  * @return The formatted date string.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun ZonedDateTime.formatToString(pattern: String): String {
+fun ZonedDateTime.kompanionFormatToString(pattern: String): String {
     val formatter = DateTimeFormatter.ofPattern(pattern)
     return this.format(formatter)
 }
@@ -255,7 +351,7 @@ fun ZonedDateTime.formatToString(pattern: String): String {
  * @return The corresponding LocalDateTime.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun ZonedDateTime.toLocalDateTime(): LocalDateTime {
+fun ZonedDateTime.kompanionToLocalDateTime(): LocalDateTime {
     return this.toLocalDateTime()
 }
 
@@ -265,7 +361,7 @@ fun ZonedDateTime.toLocalDateTime(): LocalDateTime {
  * @return A new ZonedDateTime instance.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun ZonedDateTime.addHours(hours: Long): ZonedDateTime {
+fun ZonedDateTime.kompanionAddHours(hours: Long): ZonedDateTime {
     return this.plusHours(hours)
 }
 
@@ -274,7 +370,7 @@ fun ZonedDateTime.addHours(hours: Long): ZonedDateTime {
  * @return True if in the past, otherwise false.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun ZonedDateTime.isInPast(): Boolean {
+fun ZonedDateTime.kompanionIsInPast(): Boolean {
     return this.isBefore(ZonedDateTime.now())
 }
 
@@ -284,7 +380,7 @@ fun ZonedDateTime.isInPast(): Boolean {
  * @return The number of days difference.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.daysBetween(other: LocalDateTime): Long {
+fun LocalDateTime.kompanionDaysBetween(other: LocalDateTime): Long {
     return ChronoUnit.DAYS.between(this, other)
 }
 
@@ -295,7 +391,7 @@ fun LocalDateTime.daysBetween(other: LocalDateTime): Long {
  * @return True if this LocalDateTime is within the range, otherwise false.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.isInRange(start: LocalDateTime, end: LocalDateTime): Boolean {
+fun LocalDateTime.kompanionIsInRange(start: LocalDateTime, end: LocalDateTime): Boolean {
     return this.isEqual(start) || this.isEqual(end) || (this.isAfter(start) && this.isBefore(end))
 }
 
@@ -304,7 +400,7 @@ fun LocalDateTime.isInRange(start: LocalDateTime, end: LocalDateTime): Boolean {
  * @return The Unix timestamp.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.toUnixTimestamp(): Long {
+fun LocalDateTime.kompanionToUnixTimestamp(): Long {
     return this.atZone(java.time.ZoneId.systemDefault()).toEpochSecond()
 }
 
@@ -315,7 +411,7 @@ fun LocalDateTime.toUnixTimestamp(): Long {
  * @return The number of months difference.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDate.monthsBetween(other: LocalDate): Long {
+fun LocalDate.kompanionMonthsBetween(other: LocalDate): Long {
     return ChronoUnit.MONTHS.between(this, other)
 }
 
@@ -325,7 +421,7 @@ fun LocalDate.monthsBetween(other: LocalDate): Long {
  * @return The number of years difference.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDate.yearsBetween(other: LocalDate): Long {
+fun LocalDate.kompanionYearsBetween(other: LocalDate): Long {
     return ChronoUnit.YEARS.between(this, other)
 }
 
@@ -334,7 +430,7 @@ fun LocalDate.yearsBetween(other: LocalDate): Long {
  * @return True if it is Saturday or Sunday, otherwise false.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDate.isWeekend(): Boolean {
+fun LocalDate.kompanionIsWeekend(): Boolean {
     return this.dayOfWeek.value == 6 || this.dayOfWeek.value == 7
 }
 
@@ -344,9 +440,9 @@ fun LocalDate.isWeekend(): Boolean {
  * @return True if they are on the same day, otherwise false.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun Date.isSameDay(other: Date): Boolean {
-    val thisLocalDate = this.toLocalDate()
-    val otherLocalDate = other.toLocalDate()
+fun Date.kompanionIsSameDay(other: Date): Boolean {
+    val thisLocalDate = this.kompanionToLocalDate()
+    val otherLocalDate = other.kompanionToLocalDate()
     return thisLocalDate.isEqual(otherLocalDate)
 }
 
@@ -355,7 +451,7 @@ fun Date.isSameDay(other: Date): Boolean {
  * @return The corresponding ZonedDateTime.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun Date.toZonedDateTime(): ZonedDateTime {
+fun Date.kompanionToZonedDateTime(): ZonedDateTime {
     return this.toInstant().atZone(ZoneId.systemDefault())
 }
 
@@ -366,7 +462,7 @@ fun Date.toZonedDateTime(): ZonedDateTime {
  * @return The number of hours difference.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun ZonedDateTime.hoursBetween(other: ZonedDateTime): Long {
+fun ZonedDateTime.kompanionHoursBetween(other: ZonedDateTime): Long {
     return ChronoUnit.HOURS.between(this, other)
 }
 
@@ -376,7 +472,7 @@ fun ZonedDateTime.hoursBetween(other: ZonedDateTime): Long {
  * @return True if they are in the same zone, otherwise false.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun ZonedDateTime.isSameZone(other: ZonedDateTime): Boolean {
+fun ZonedDateTime.kompanionIsSameZone(other: ZonedDateTime): Boolean {
     return this.zone == other.zone
 }
 
@@ -386,7 +482,7 @@ fun ZonedDateTime.isSameZone(other: ZonedDateTime): Boolean {
  * @return A new LocalDateTime instance.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.subtractDays(days: Long): LocalDateTime {
+fun LocalDateTime.kompanionSubtractDays(days: Long): LocalDateTime {
     return this.minusDays(days)
 }
 
@@ -395,7 +491,7 @@ fun LocalDateTime.subtractDays(days: Long): LocalDateTime {
  * @return A LocalDateTime set to the start of the day.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.startOfDay(): LocalDateTime {
+fun LocalDateTime.kompanionStartOfDay(): LocalDateTime {
     return this.toLocalDate().atStartOfDay()
 }
 
@@ -404,7 +500,7 @@ fun LocalDateTime.startOfDay(): LocalDateTime {
  * @return A LocalDateTime set to the end of the day.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDateTime.endOfDay(): LocalDateTime {
+fun LocalDateTime.kompanionEndOfDay(): LocalDateTime {
     return this.toLocalDate().atTime(23, 59, 59, 999999999)
 }
 
@@ -414,7 +510,7 @@ fun LocalDateTime.endOfDay(): LocalDateTime {
  * @return The first day of the month.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDate.firstDayOfMonth(): LocalDate {
+fun LocalDate.kompanionFirstDayOfMonth(): LocalDate {
     return this.withDayOfMonth(1)
 }
 
@@ -423,7 +519,7 @@ fun LocalDate.firstDayOfMonth(): LocalDate {
  * @return The last day of the month.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDate.lastDayOfMonth(): LocalDate {
+fun LocalDate.kompanionLastDayOfMonth(): LocalDate {
     return this.withDayOfMonth(this.lengthOfMonth())
 }
 
@@ -432,7 +528,7 @@ fun LocalDate.lastDayOfMonth(): LocalDate {
  * @return True if it is a leap year, otherwise false.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun LocalDate.isLeapYear(): Boolean {
+fun LocalDate.kompanionIsLeapYear(): Boolean {
     return this.year % 4 == 0 && (this.year % 100 != 0 || this.year % 400 == 0)
 }
 
@@ -442,7 +538,7 @@ fun LocalDate.isLeapYear(): Boolean {
  * @return The corresponding LocalDateTime.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun Date.toLocalDateTime(zoneId: ZoneId = ZoneId.systemDefault()): LocalDateTime {
+fun Date.kompanionToLocalDateTime(zoneId: ZoneId = ZoneId.systemDefault()): LocalDateTime {
     return this.toInstant().atZone(zoneId).toLocalDateTime()
 }
 
@@ -451,7 +547,7 @@ fun Date.toLocalDateTime(zoneId: ZoneId = ZoneId.systemDefault()): LocalDateTime
  * @param days Number of days to check against.
  * @return True if within the range, otherwise false.
  */
-fun Date.isWithinDaysFromNow(days: Int): Boolean {
+fun Date.kompanionIsWithinDaysFromNow(days: Int): Boolean {
     val now = Date()
     val futureDate = Date(now.time + days * 24 * 60 * 60 * 1000)
     return this.after(now) && this.before(futureDate)
@@ -461,7 +557,7 @@ fun Date.isWithinDaysFromNow(days: Int): Boolean {
  * Returns the number of milliseconds since the epoch for this Date.
  * @return The milliseconds since epoch.
  */
-fun Date.toEpochMilliseconds(): Long {
+fun Date.kompanionToEpochMilliseconds(): Long {
     return this.time
 }
 
@@ -470,7 +566,7 @@ fun Date.toEpochMilliseconds(): Long {
  * @return The corresponding LocalDate.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun ZonedDateTime.toLocalDate(): LocalDate {
+fun ZonedDateTime.kompanionToLocalDate(): LocalDate {
     return this.toLocalDate()
 }
 
@@ -479,7 +575,7 @@ fun ZonedDateTime.toLocalDate(): LocalDate {
  * @return True if it is in the future, otherwise false.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun ZonedDateTime.isInFuture(): Boolean {
+fun ZonedDateTime.kompanionIsInFuture(): Boolean {
     return this.isAfter(ZonedDateTime.now())
 }
 
@@ -488,7 +584,7 @@ fun ZonedDateTime.isInFuture(): Boolean {
  * @return The number of days left in the month.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun ZonedDateTime.daysRemainingInMonth(): Long {
+fun ZonedDateTime.kompanionDaysRemainingInMonth(): Long {
     val lastDayOfMonth = this.toLocalDate().withDayOfMonth(this.toLocalDate().lengthOfMonth())
     return ChronoUnit.DAYS.between(this.toLocalDate(), lastDayOfMonth)
 }
@@ -500,7 +596,7 @@ fun ZonedDateTime.daysRemainingInMonth(): Long {
  * @return The corresponding LocalDate or null if parsing fails.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun parseLocalDate(dateString: String, format: String): LocalDate? {
+fun kompanionParseLocalDate(dateString: String, format: String): LocalDate? {
     return try {
         LocalDate.parse(dateString, DateTimeFormatter.ofPattern(format))
     } catch (e: DateTimeParseException) {
@@ -515,7 +611,7 @@ fun parseLocalDate(dateString: String, format: String): LocalDate? {
  * @return The corresponding LocalDateTime or null if parsing fails.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun parseLocalDateTime(dateString: String, format: String): LocalDateTime? {
+fun kompanionParseLocalDateTime(dateString: String, format: String): LocalDateTime? {
     return try {
         LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern(format))
     } catch (e: DateTimeParseException) {
@@ -530,7 +626,7 @@ fun parseLocalDateTime(dateString: String, format: String): LocalDateTime? {
  * @return The corresponding ZonedDateTime or null if parsing fails.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-fun parseZonedDateTime(dateString: String, format: String): ZonedDateTime? {
+fun kompanionParseZonedDateTime(dateString: String, format: String): ZonedDateTime? {
     return try {
         ZonedDateTime.parse(dateString, DateTimeFormatter.ofPattern(format))
     } catch (e: DateTimeParseException) {

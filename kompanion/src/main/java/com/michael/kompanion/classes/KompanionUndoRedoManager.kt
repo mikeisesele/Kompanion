@@ -10,6 +10,46 @@ interface Command {
 
 /**
  * Invoker to manage command execution with undo/redo support.
+ *
+ * example
+ *
+ *
+ * class ChangeTextCommand(private val editor: TextEditor, private val newText: String) : Command {
+ *     private val oldText: String = editor.text
+ *
+ *     override fun execute() {
+ *         editor.text = newText
+ *     }
+ *
+ *     override fun undo() {
+ *         editor.text = oldText
+ *     }
+ * }
+ *
+ * class TextEditor {
+ *     var text: String = ""
+ * }
+ *
+ *
+ * Usage
+ *
+*      val editor = TextEditor()
+ *     val undoRedoManager = KompanionUndoRedoManager()
+ *
+ *     // Execute a command to change the text
+ *     val changeTextCommand = ChangeTextCommand(editor, "Hello, World!")
+ *     undoRedoManager.executeCommand(changeTextCommand)
+ *
+ *     println("Current text: ${editor.text}") // Output: Hello, World!
+ *
+ *     // Undo the change
+ *     undoRedoManager.undo()
+ *     println("After undo: ${editor.text}") // Output: (empty string)
+ *
+ *     // Redo the change
+ *     undoRedoManager.redo()
+ *     println("After redo: ${editor.text}") // Output: Hello, World!
+ *
  */
 class KompanionUndoRedoManager {
     private val undoStack = mutableListOf<Command>()

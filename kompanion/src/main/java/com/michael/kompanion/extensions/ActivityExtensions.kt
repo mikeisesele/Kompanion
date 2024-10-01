@@ -19,7 +19,7 @@ import java.io.Serializable
  * navigateTo<SecondActivity>(flags = Intent.FLAG_ACTIVITY_CLEAR_TOP)
  *
  */
-inline fun <reified T : Activity> Context.navigateTo(
+inline fun <reified T : Activity> Context.kompanionNavigateTo(
     vararg flags: Int,
     extras: List<Pair<String, Any>> = emptyList()
 ) {
@@ -50,7 +50,7 @@ inline fun <reified T : Activity> Context.navigateTo(
 /*
     function to read from assets folder. fileName would be filename.json
  */
-fun Activity.readFromAssets(fileName: String) : String {
+fun Activity.kompanionReadFromAssets(fileName: String) : String {
     return kompanionSafeNullableReturnableOperation(
         operation = {
             assets.open(fileName)
@@ -64,13 +64,13 @@ fun Activity.readFromAssets(fileName: String) : String {
     ).orEmpty()
 }
 
-fun Activity.finishWithResult(resultCode: Int, resultIntent: Intent? = null) {
+fun Activity.kompanionFinishWithResult(resultCode: Int, resultIntent: Intent? = null) {
     setResult(resultCode, resultIntent)
     finish()
 }
 
 
-fun Activity.takeScreenshot(): Bitmap? {
+fun Activity.kompanionTakeScreenshot(): Bitmap? {
     val view = window.decorView.rootView
     view.isDrawingCacheEnabled = true
     val bitmap = Bitmap.createBitmap(view.drawingCache)
@@ -78,8 +78,8 @@ fun Activity.takeScreenshot(): Bitmap? {
     return bitmap
 }
 
-fun Activity.takeScreenshotAsFile(): File? {
-    val bitmap = takeScreenshot() ?: return null
+fun Activity.kompanionTakeScreenshotAsFile(): File? {
+    val bitmap = kompanionTakeScreenshot() ?: return null
     val file = File(externalCacheDir, "screenshot_${System.currentTimeMillis()}.png")
     val outputStream = FileOutputStream(file)
     bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)

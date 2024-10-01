@@ -2,6 +2,7 @@ package com.michael.kompanion.classes
 
 
 /**
+ * Add operations to execute and handles them in a transactional way.
  * Manages a transactional operation with rollback support.
  *
  * val transactionManager = TransactionManager<String>()
@@ -15,7 +16,12 @@ package com.michael.kompanion.classes
  *     rollback = { println("Rollback Task 2: $it") }
  * )
  *
- * transactionManager.commit()
+ * // Attempt to commit the tasks
+ *     try {
+ *         transactionManager.commit()
+ *     } catch (e: Exception) {
+ *         println("Transaction failed: ${e.message}")
+ *     }
  *
  */
 class KompanionTransactionManager<T> {
@@ -37,7 +43,7 @@ class KompanionTransactionManager<T> {
         }
     }
 
-    fun rollback() {
+    private fun rollback() {
         for ((_, rollback) in actions.reversed()) {
             if (committedResults.isNotEmpty()) {
                 rollback(committedResults.removeLast())

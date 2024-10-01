@@ -15,39 +15,84 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+
+/**
+ * Switches the execution context to IO dispatcher and executes the provided block.
+ *
+ * @param block The suspending block of code to be executed on the IO dispatcher.
+ * @return The result of the block.
+ */
 suspend fun <T> kompanionWithIO(block: suspend CoroutineScope.() -> T): T {
     return withContext(Dispatchers.IO, block)
 }
 
+/**
+ * Launches a new coroutine on the IO dispatcher without returning any result.
+ *
+ * @param runner The suspending block to be executed.
+ */
 fun kompanionCoIO(runner: suspend CoroutineScope.() -> Unit) =
-    CoroutineScope(Dispatchers.IO).launch { runner.invoke((this)) }
+    CoroutineScope(Dispatchers.IO).launch { runner.invoke(this) }
 
+/**
+ * Launches a new coroutine on the Main dispatcher without returning any result.
+ *
+ * @param runner The suspending block to be executed.
+ */
 fun kompanionCoMain(runner: suspend CoroutineScope.() -> Unit) =
-    CoroutineScope(Dispatchers.Main).launch { runner.invoke((this)) }
+    CoroutineScope(Dispatchers.Main).launch { runner.invoke(this) }
 
+/**
+ * Maps over an iterable and applies the given function concurrently, using coroutines.
+ *
+ * @param f The suspending function to apply to each element.
+ * @return A list of results of the function applied to the iterable elements.
+ */
 suspend fun <A, B> Iterable<A>.pmap(f: suspend (A) -> B): List<B> =
     coroutineScope {
         map { async { f(it) } }.awaitAll()
     }
 
+/**
+ * Executes a suspending block asynchronously and returns its result.
+ *
+ * @param block The suspending block to be executed asynchronously.
+ * @return The result of the block.
+ */
 suspend fun <T> coAsync(block: suspend () -> T): T = coroutineScope {
     val deferred = async { block.invoke() }
     deferred.await()
 }
 
+/**
+ * Executes a suspending block in the background using the Default dispatcher and returns a nullable integer.
+ *
+ * @param block The suspending block to be executed.
+ * @return The nullable integer result of the block.
+ */
 suspend fun onBackgroundReturnable(block: suspend () -> Int?): Int? {
     return withContext(Dispatchers.Default) {
         block()
     }
 }
 
+/**
+ * Executes a suspending block in the background using the Default dispatcher and returns its result.
+ *
+ * @param block The suspending block to be executed.
+ * @return The result of the block.
+ */
 suspend fun <T> onBackground(block: suspend () -> T): T {
     return withContext(Dispatchers.Default) {
         block()
     }
 }
 
-
+/**
+ * Executes a suspending block on the IO dispatcher without returning a result.
+ *
+ * @param block The suspending block to be executed.
+ */
 suspend fun <T> toBackground(block: suspend () -> T) {
     coroutineScope {
         async(Dispatchers.IO) {
@@ -56,6 +101,11 @@ suspend fun <T> toBackground(block: suspend () -> T) {
     }
 }
 
+/**
+ * Executes a suspending block on the Main dispatcher without returning a result.
+ *
+ * @param block The suspending block to be executed.
+ */
 suspend fun <T> toMain(block: suspend () -> T) {
     coroutineScope {
         async(Dispatchers.Main) {
@@ -64,7 +114,11 @@ suspend fun <T> toMain(block: suspend () -> T) {
     }
 }
 
-
+/**
+ * Executes a suspending block on the Default dispatcher without returning a result.
+ *
+ * @param block The suspending block to be executed.
+ */
 suspend fun <T> toDefault(block: suspend () -> T) {
     coroutineScope {
         async(Dispatchers.Default) {
@@ -73,7 +127,11 @@ suspend fun <T> toDefault(block: suspend () -> T) {
     }
 }
 
-
+/**
+ * Awaits the result of a Deferred task, returning null in case of an exception.
+ *
+ * @return The result of the Deferred task or null in case of an exception.
+ */
 suspend fun <T> Deferred<T>.kompanionAwaitOrNull(): T? {
     return kompanionSafeReturnableSuspendOperation(
         operation = {
@@ -82,6 +140,16 @@ suspend fun <T> Deferred<T>.kompanionAwaitOrNull(): T? {
     )
 }
 
+/**
+ * Retries a suspending operation a given number of times with an exponential backoff strategy.
+ *
+ * @param times The number of retry attempts.
+ * @param initialDelayMs The initial delay before retrying (in milliseconds).
+ * @param maxDelayMs The maximum delay between retries (in milliseconds).
+ * @param factor The factor by which the delay increases after each attempt.
+ * @param block The suspending block to execute.
+ * @return The result of the block after retries.
+ */
 suspend fun <T> retry(
     times: Int,
     initialDelayMs: Long = 100,
@@ -101,10 +169,22 @@ suspend fun <T> retry(
     return block() // Last attempt without delay
 }
 
-// Flow extension function to combine two flows
+/**
+ * Combines two Flows into a Flow of Pairs, emitting elements from both flows together.
+ *
+ * @param other The other Flow to combine with.
+ * @return A Flow of Pairs, where each Pair contains one element from each Flow.
+ */
 fun <T1, T2> Flow<T1>.combine(other: Flow<T2>): Flow<Pair<T1, T2>> =
     combine(other) { t1, t2 -> Pair(t1, t2) }
 
+/**
+ * Combines two Flows and transforms their elements using the provided transform function.
+ *
+ * @param other The other Flow to combine with.
+ * @param transform The transformation function to apply to the elements from both Flows.
+ * @return A Flow emitting the transformed results.
+ */
 fun <T1, T2, R> Flow<T1>.combine(other: Flow<T2>, transform: (T1, T2) -> R): Flow<R> = flow {
     val outerFlow = this@combine
     outerFlow.map { outer ->
@@ -118,12 +198,22 @@ fun <T1, T2, R> Flow<T1>.combine(other: Flow<T2>, transform: (T1, T2) -> R): Flo
     }
 }
 
+/**
+ * Launches a coroutine on the IO dispatcher.
+ *
+ * @param block The suspending block to be executed.
+ */
 fun CoroutineScope.launchIO(block: suspend CoroutineScope.() -> Unit) {
     launch(Dispatchers.IO) {
         block()
     }
 }
 
+/**
+ * Launches a coroutine on the Main dispatcher.
+ *
+ * @param block The suspending block to be executed.
+ */
 fun CoroutineScope.launchMain(block: suspend CoroutineScope.() -> Unit) {
     launch(Dispatchers.Main) {
         block()
@@ -297,7 +387,7 @@ fun kompanionCancelAndStartNewJob(
  * }
  *
  */
-suspend fun <T> List<suspend () -> T>.komPanionParallelExecute(): List<T> = coroutineScope {
+suspend fun <T> List<suspend () -> T>.kompanionParallelExecute(): List<T> = coroutineScope {
     map { async { it() } }.awaitAll()
 }
 

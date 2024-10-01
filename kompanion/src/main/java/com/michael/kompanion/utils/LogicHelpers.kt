@@ -41,7 +41,7 @@ fun <T> kompanionClearAllArray(vararg objects: T?) {
  * @param defaultValue A lambda function providing the default value.
  * @return The original object if not null, otherwise the result of defaultValue().
  */
-inline fun <T> T?.ifNullSetDefault(defaultValue: () -> T): T {
+inline fun <T> T?.kompanionIfNullSetDefault(defaultValue: () -> T): T {
     return this ?: defaultValue()
 }
 
@@ -149,19 +149,9 @@ inline fun <T> Collection<T?>.kompanionForEachNotNull(action: (T) -> Unit) {
  */
 fun kompanionIsPalindrome(str: String): Boolean = str == str.reversed()
 
-
-
-/**
- * Calculates the greatest common divisor (GCD) of two numbers using Euclid's algorithm.
+/*
+ * generate a random float number within a given range
  */
-fun gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
-
-/**
- * Calculates the least common multiple (LCM) of two numbers.
- */
-fun lcm(a: Int, b: Int): Int = (a * b) / gcd(a, b)
-
-
 fun kompanionFloatRandom(min: Float, max: Float): Float {
     val randomValue = Random.nextFloat() * (max - min) + min
     return round(randomValue * 10) / 10
@@ -364,7 +354,7 @@ inline fun <reified T> kompanionClassOf(): Class<T> = T::class.java
  * println(result) // Retries with backoff on failure
  *
  */
-inline fun <T> kompnaionRetryWithBackoff(
+inline fun <T> kompanionRetryWithBackoff(
     initialDelay: Long = 1000L,
     maxRetries: Int = 3,
     factor: Double = 2.0,
@@ -380,116 +370,6 @@ inline fun <T> kompnaionRetryWithBackoff(
         }
     }
     return operation() // Final attempt without catching
-}
-
-
-/**
- * Memoizes a function with cache expiration after a specified timeout.
- */
-fun <T, R> ((T) -> R).kompanionMemoizeWithExpiry(timeout: Long, unit: TimeUnit): (T) -> R {
-    val cache = ConcurrentHashMap<T, Pair<R, Long>>()
-    val expiryTime = unit.toMillis(timeout)
-
-    return { input: T ->
-        val currentTime = System.currentTimeMillis()
-        cache[input]?.takeIf { currentTime - it.second < expiryTime }?.first ?: run {
-            val result = this(input)
-            cache[input] = result to currentTime
-            result
-        }
-    }
-}
-
-/**
- * Debounces a function, preventing it from being called too frequently.
- *
- * val debouncedPrint = { msg: String -> println(msg) }.debounce(1000L)
- *
- * debouncedPrint("First call")  // Prints
- * debouncedPrint("Second call") // Ignored if within 1 second of the first
- *
- */
-fun <T> ((T) -> Unit).kompanionDebounce(waitMs: Long): (T) -> Unit {
-    var lastInvocation = 0L
-    return { param: T ->
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - lastInvocation >= waitMs) {
-            lastInvocation = currentTime
-            this(param)
-        }
-    }
-}
-
-
-/**
- * Rate limits a function to only allow execution every `intervalMs` milliseconds.
- *
- * val rateLimitedPrint = { msg: String -> println(msg) }.rateLimit(1000L)
- *
- * rateLimitedPrint("First")  // Prints
- * rateLimitedPrint("Second") // Ignored if within 1 second of first call
- *
- */
-fun <T> ((T) -> Unit).kompanionRateLimit(intervalMs: Long): (T) -> Unit {
-    var lastInvocation = 0L
-
-    return { param: T ->
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - lastInvocation >= intervalMs) {
-            lastInvocation = currentTime
-            this(param)
-        }
-    }
-}
-
-/**
- * Throttles a suspending function to only allow execution once per `intervalMs` milliseconds.
- *
- * val throttledPrint = { msg: String -> println(msg) }.throttle(1000L)
- *
- * throttledPrint("First call")  // Prints
- * throttledPrint("Second call") // Ignored if within 1 second of the first
- *
- */
-fun <T> ((T) -> Unit).kompanionThrottle(intervalMs: Long): (T) -> Unit {
-    var lastInvocation = 0L
-    val lock = Any()
-
-    return { param: T ->
-        synchronized(lock) {
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - lastInvocation >= intervalMs) {
-                lastInvocation = currentTime
-                this(param)
-            }
-        }
-    }
-}
-
-/**
- * Coroutine version of throttle for suspending functions.
- *
- * val throttledPrintCoroutine = { msg: String -> println(msg) }.throttleCoroutine(1000L)
- *
- * runBlocking {
- *     throttledPrintCoroutine("First coroutine call")
- *     throttledPrintCoroutine("Second coroutine call")
- * }
- *
- */
-fun <T> ((T) -> Unit).kompanionthrottleCoroutine(intervalMs: Long): suspend (T) -> Unit {
-    var lastInvocation = 0L
-    val lock = Any()
-
-    return { param: T ->
-        synchronized(lock) {
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - lastInvocation >= intervalMs) {
-                lastInvocation = currentTime
-                this(param)
-            }
-        }
-    }
 }
 
 

@@ -11,7 +11,7 @@ import java.io.File
 
 const val MIME_PDF = "application/pdf"
 
-fun Context.downloadFile(
+fun Context.kompanionDownloadFile(
     fileName: String,
     desc: String,
     url: String,
@@ -39,7 +39,7 @@ fun Context.downloadFile(
  * reader. By migrating to a content:// scheme (as file is no longer supported), we don't need to request
  * additional read permission as a temporary read permission is added as part of the content:// uri
  */
-fun Context.getFileUri(uri: String): Uri {
+fun Context.kompanionGetFileUri(uri: String): Uri {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         Uri.parse(uri)
     } else {
@@ -47,7 +47,7 @@ fun Context.getFileUri(uri: String): Uri {
     }
 }
 
-fun Context.openFile(
+fun Context.kompanionOpenFile(
     uri: String,
     mimeDataType: String? = null,
     onErrorAction: () -> Unit,
@@ -55,11 +55,11 @@ fun Context.openFile(
     with(Intent(Intent.ACTION_VIEW)) {
         if (!mimeDataType.isNullOrBlank()) {
             setDataAndType(
-                getFileUri(uri),
+                kompanionGetFileUri(uri),
                 mimeDataType,
             )
         } else {
-            data = getFileUri(uri)
+            data = kompanionGetFileUri(uri)
         }
         addFlags(
             Intent.FLAG_ACTIVITY_NEW_TASK

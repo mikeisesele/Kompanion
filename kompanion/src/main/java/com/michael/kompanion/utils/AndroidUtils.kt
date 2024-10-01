@@ -4,7 +4,7 @@ import android.app.Dialog
 import android.view.Gravity
 import android.view.WindowManager
 
-fun Dialog.setFullScreen() {
+fun Dialog.kompanionSetFullScreen() {
     window?.apply {
         setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
