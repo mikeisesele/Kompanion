@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("maven-publish")
 }
 
 android {
@@ -31,29 +30,8 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    publishing {
-        publishing {
-            singleVariant("release") {
-                withSourcesJar()
-                withJavadocJar()
-            }
-        }
-    }
 }
 
-publishing {
-    publications {
-        create("release", MavenPublication::class) {
-            groupId = "com.mikeisesele"
-            artifactId = "kompanion"
-            version = "1.1.0"
-
-            afterEvaluate {
-                from(components["release"])
-            }
-        }
-    }
-}
 
 dependencies {
 
