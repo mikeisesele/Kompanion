@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("maven-publish")
 }
 
 android {
@@ -35,20 +34,6 @@ android {
         singleVariant("release") {
             withSourcesJar()
             withJavadocJar()
-        }
-    }
-}
-
-publishing {
-    publications {
-        create("release", MavenPublication::class) {
-            groupId = "com.mikeisesele"
-            artifactId = "Kompanion"
-            version = "1.1.0"
-
-            afterEvaluate {
-                from(components["release"])
-            }
         }
     }
 }
