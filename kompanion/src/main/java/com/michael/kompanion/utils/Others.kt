@@ -1,12 +1,5 @@
 package com.michael.kompanion.utils
 
-import android.content.Context
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
-import com.michael.easylog.logE
-import com.michael.easylog.logInline
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ensureActive
@@ -27,20 +20,15 @@ import kotlin.coroutines.coroutineContext
  * @param actionOnException An optional action to be executed in case of an exception.
  *                          It takes no parameters and is typically used for cleanup or logging.
  */
-fun safeOperation(
+fun kompanionSafeOperation(
     operation: () -> Unit,
     actionOnException: ((e:Exception) -> Unit)? = null,
-    exceptionMessage: String,
 ) {
     try {
         operation.invoke()
     } catch (e: Exception) {
         //print stack trace
         e.printStackTrace()
-
-        // Log the exception and associated log message
-        exceptionMessage.logInline("safeOperation Exception: ")
-
         // Invoke the optional actionOnException (cleanup or additional logging)
         actionOnException?.invoke(e)
     }
@@ -56,19 +44,15 @@ fun safeOperation(
  * @param exceptionMessage The log message associated with the exception.
  * @return The result of the operation or null in case of an exception.
  */
-fun <T> safeNullableReturnableOperation(
+fun <T> kompanionSafeNullableReturnableOperation(
     operation: () -> T?,
     actionOnException: ((e: Exception?) -> Unit)? = null,
-    exceptionMessage: String,
 ): T? {
     return try {
         operation.invoke()
     } catch (e: Exception) {
         // Print stack trace
         e.printStackTrace()
-
-        // Log the exception message
-        exceptionMessage.logE()
 
         // Invoke the optional actionOnException with the error message
         actionOnException?.invoke(e)
@@ -86,19 +70,15 @@ fun <T> safeNullableReturnableOperation(
  *                          It takes a nullable string parameter representing the error message.
  * @param exceptionMessage The log message associated with the exception.
  */
-suspend fun <T> safeSuspendOperation(
+suspend fun <T> kompanionSafeSuspendOperation(
     operation: suspend () -> T,
     actionOnException: (suspend (exception: Exception?) -> Unit)? = null,
-    exceptionMessage: String
 ): T? {
     return try {
         operation.invoke()
     } catch (e: Exception) {
         //print stack trace
         e.printStackTrace()
-
-        // Log the exception and associated log message
-        exceptionMessage.logInline("safeSuspendOperation Exception: ")
 
         // Invoke the optional actionOnException with the error message
         actionOnException?.invoke(e)
@@ -116,19 +96,15 @@ suspend fun <T> safeSuspendOperation(
  *                          It takes a nullable string parameter representing the error message.
  * @return The result of the operation or null in case of an exception.
  */
-suspend fun <T> safeReturnableSuspendOperation(
+suspend fun <T> kompanionSafeReturnableSuspendOperation(
     operation: suspend () -> T?,
     actionOnException: ((message: Exception?) -> Unit)? = null,
-    exceptionMessage: String,
 ): T? {
     return try {
         operation.invoke()
     } catch (e: Exception) {
         //print stack trace
         e.printStackTrace()
-
-        // Log the exception and associated log message
-        exceptionMessage.logInline("safeReturnableOperation Exception: ")
 
         // Invoke the optional actionOnException with the error message
         actionOnException?.invoke(e)
@@ -138,10 +114,9 @@ suspend fun <T> safeReturnableSuspendOperation(
     }
 }
 
-suspend fun <T> safeFlowReturnableOperation(
+suspend fun <T> kompanionSafeFlowReturnableOperation(
     operation: suspend () -> T?,
     actionOnException: ((message: Exception?) -> Unit)? = null,
-    exceptionMessage: String,
     dispatcher: CoroutineDispatcher
 ): Flow<T?> = flow {
     try {
@@ -154,9 +129,6 @@ suspend fun <T> safeFlowReturnableOperation(
         // Print stack trace
         e.printStackTrace()
 
-        // Log the exception and associated log message
-        exceptionMessage.logInline("safeReturnableOperation Exception: ")
-
         // Invoke the optional actionOnException with the error message
         actionOnException?.invoke(e)
 
@@ -166,7 +138,7 @@ suspend fun <T> safeFlowReturnableOperation(
 }.flowOn(dispatcher)
 
 
-suspend fun <T : Any?> Flow<T>.singleFlowOnItemReceivedInScope(
+suspend fun <T : Any?> Flow<T>.kompanionSingleFlowOnItemReceivedInScope(
     onStart: () -> Unit = {},
     onItemReceived: suspend (T) -> Unit = { _ -> },
     onError: (Throwable) -> Unit = { _ -> },

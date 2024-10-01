@@ -1,13 +1,9 @@
 package com.michael.kompanion.utils
 
-import com.michael.easylog.logInline
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
 import kotlin.random.Random
-import kotlin.reflect.KClass
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.full.primaryConstructor
 
 /**
 * Checks if all the provided objects are not null.
@@ -54,7 +50,7 @@ inline fun <T> T?.ifNullSetDefault(defaultValue: () -> T): T {
  *
  * @param operation A lambda function representing the operation to perform if the object is null.
  */
-inline fun <T> T?.ifNullPerform(operation: () -> Unit) {
+inline fun <T> T?.kompanionIfNullPerform(operation: () -> Unit) {
     this ?: operation()
 }
 
@@ -62,22 +58,22 @@ inline fun <T> T?.ifNullPerform(operation: () -> Unit) {
 /**
  * Generates a random integer within the specified range.
  */
-fun randomInt(min: Int, max: Int): Int = (min..max).random()
+fun kompanionRandomInt(min: Int, max: Int): Int = (min..max).random()
 
 /**
  * Creates a shallow copy of the set.
  */
-fun <T> Set<T>.shallowCopy(): Set<T> = HashSet(this)
+fun <T> Set<T>.kompanionShallowCopy(): Set<T> = HashSet(this)
 
 /**
  * Creates a shallow copy of the map.
  */
-fun <K, V> Map<K, V>.shallowCopy(): Map<K, V> = HashMap(this)
+fun <K, V> Map<K, V>.kompanionShallowCopy(): Map<K, V> = HashMap(this)
 
 /**
  * Calculates the factorial of a non-negative integer.
  */
-fun factorial(n: Int): Long {
+fun kompanionFactorial(n: Int): Long {
     require(n >= 0) { "Factorial is defined only for non-negative integers." }
     var result = 1L
     for (i in 2..n) {
@@ -89,28 +85,28 @@ fun factorial(n: Int): Long {
 /**
  * Retrieves the value for the given key or returns the default value if the key doesn't exist or the value is null.
  */
-inline fun <K, V> Map<K, V?>.getOrDefault(key: K, defaultValue: () -> V): V {
+inline fun <K, V> Map<K, V?>.kompanionGetOrDefault(key: K, defaultValue: () -> V): V {
     return this[key] ?: defaultValue()
 }
 
 /**
  * Executes the block if all provided arguments are not null.
  */
-inline fun <T1, T2, R> runIfNotNull(arg1: T1?, arg2: T2?, block: (T1, T2) -> R): R? {
+inline fun <T1, T2, R> kompanionRunIfNotNull(arg1: T1?, arg2: T2?, block: (T1, T2) -> R): R? {
     return if (arg1 != null && arg2 != null) block(arg1, arg2) else null
 }
 
 /**
  * Runs the block if all provided values are non-null.
  */
-inline fun <T1, T2, T3, R> ifAllNotNull(arg1: T1?, arg2: T2?, arg3: T3?, block: (T1, T2, T3) -> R): R? {
+inline fun <T1, T2, T3, R> kompanionIfAllNotNull(arg1: T1?, arg2: T2?, arg3: T3?, block: (T1, T2, T3) -> R): R? {
     return if (arg1 != null && arg2 != null && arg3 != null) block(arg1, arg2, arg3) else null
 }
 
 /**
  * Swaps two elements in a mutable list.
  */
-fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
+fun <T> MutableList<T>.kompanionSwap(index1: Int, index2: Int) {
     val tmp = this[index1]
     this[index1] = this[index2]
     this[index2] = tmp
@@ -119,14 +115,14 @@ fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
 /**
  * Safely casts the object to the given type or returns the default value.
  */
-inline fun <reified T> Any?.castOrDefault(defaultValue: () -> T): T {
+inline fun <reified T> Any?.kompanionCastOrDefault(defaultValue: () -> T): T {
     return this as? T ?: defaultValue()
 }
 
 /**
  * Initializes the value if it's null.
  */
-inline fun <T> T?.initializeIfNull(initializer: () -> T): T {
+inline fun <T> T?.kompanionInitializeIfNull(initializer: () -> T): T {
     return this ?: initializer()
 }
 
@@ -134,14 +130,14 @@ inline fun <T> T?.initializeIfNull(initializer: () -> T): T {
 /**
  * Checks if all strings in the collection are non-null and non-empty.
  */
-fun Collection<String?>.allNotEmpty(): Boolean {
+fun Collection<String?>.kompanionAllNotEmpty(): Boolean {
     return this.all { !it.isNullOrEmpty() }
 }
 
 /**
  * Runs an action for each non-null element in a collection.
  */
-inline fun <T> Collection<T?>.forEachNotNull(action: (T) -> Unit) {
+inline fun <T> Collection<T?>.kompanionForEachNotNull(action: (T) -> Unit) {
     for (element in this) {
         element?.let(action)
     }
@@ -151,7 +147,7 @@ inline fun <T> Collection<T?>.forEachNotNull(action: (T) -> Unit) {
 /**
  * Checks if a string is a palindrome.
  */
-fun isPalindrome(str: String): Boolean = str == str.reversed()
+fun kompanionIsPalindrome(str: String): Boolean = str == str.reversed()
 
 
 
@@ -166,7 +162,7 @@ fun gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
 fun lcm(a: Int, b: Int): Int = (a * b) / gcd(a, b)
 
 
-fun floatRandom(min: Float, max: Float): Float {
+fun kompanionFloatRandom(min: Float, max: Float): Float {
     val randomValue = Random.nextFloat() * (max - min) + min
     return round(randomValue * 10) / 10
 }
@@ -176,7 +172,7 @@ fun floatRandom(min: Float, max: Float): Float {
  * @param times The number of times to retry.
  * @param block The block of code to retry.
  */
-inline fun <T> retry(times: Int, block: () -> T): T? {
+inline fun <T> kompanionRetry(times: Int, block: () -> T): T? {
     var currentAttempt = 0
     while (currentAttempt < times) {
         try {
@@ -191,34 +187,33 @@ inline fun <T> retry(times: Int, block: () -> T): T? {
 /**
  * Converts a nullable boolean to false if it's null.
  */
-fun Boolean?.orFalse(): Boolean {
+fun Boolean?.kompanionOrFalse(): Boolean {
     return this ?: false
 }
 
 /**
  * Converts a nullable boolean to true if it's null.
  */
-fun Boolean?.orTrue(): Boolean {
+fun Boolean?.kompanionOrTrue(): Boolean {
     return this ?: true
 }
 
 /**
  * Measures and prints the time taken by a block to execute.
  */
-inline fun <T> measureExecutionTime(tag: String = "ExecutionTime", block: () -> T): T {
+inline fun <T> kompanionMeasureExecutionTime(tag: String = "ExecutionTime", block: () -> T): T {
     val start = System.currentTimeMillis()
     val result = block()
     val end = System.currentTimeMillis()
     val time = "$tag took ${end - start}ms"
     println(time)
-    time.logInline("ExecutionTime")
     return result
 }
 
 /**
  * Executes the block if all specified keys in the map have non-null values.
  */
-inline fun <K, V, R> Map<K, V?>.withNonNullValues(keys: List<K>, block: (Map<K, V>) -> R): R? {
+inline fun <K, V, R> Map<K, V?>.kompanionWithNonNullValues(keys: List<K>, block: (Map<K, V>) -> R): R? {
     val nonNullValues = keys.mapNotNull { key -> this[key]?.let { key to it } }.toMap()
     return if (nonNullValues.size == keys.size) block(nonNullValues) else null
 }
@@ -226,7 +221,7 @@ inline fun <K, V, R> Map<K, V?>.withNonNullValues(keys: List<K>, block: (Map<K, 
 /**
  * Limits the length of a string, appending an ellipsis if the limit is exceeded.
  */
-fun String.limitLength(maxLength: Int, ellipsis: String = "..."): String {
+fun String.kompanionLimitLength(maxLength: Int, ellipsis: String = "..."): String {
     return if (this.length > maxLength) this.take(maxLength) + ellipsis else this
 }
 
@@ -234,7 +229,7 @@ fun String.limitLength(maxLength: Int, ellipsis: String = "..."): String {
 /**
  * Repeatedly runs a block until the condition is met.
  */
-inline fun runUntil(condition: () -> Boolean, block: () -> Unit) {
+inline fun kompanionRunUntil(condition: () -> Boolean, block: () -> Unit) {
     while (!condition()) {
         block()
     }
@@ -255,7 +250,7 @@ class ValueTracker<T>(private var value: T) {
 /**
  * Executes the block if any element in the collection is null.
  */
-inline fun <T> Collection<T?>.ifAnyIsNull(block: () -> Unit) {
+inline fun <T> Collection<T?>.kompanionIfAnyIsNull(block: () -> Unit) {
     if (any { it == null }) {
         block()
     }
@@ -264,14 +259,14 @@ inline fun <T> Collection<T?>.ifAnyIsNull(block: () -> Unit) {
 /**
  * Filters the collection using multiple predicates.
  */
-fun <T> Iterable<T>.filterWithPredicates(vararg predicates: (T) -> Boolean): List<T> {
+fun <T> Iterable<T>.kompanionFilterWithPredicates(vararg predicates: (T) -> Boolean): List<T> {
     return this.filter { item -> predicates.all { it(item) } }
 }
 
 /**
  * Executes different blocks based on the type of the object.
  */
-inline fun <reified T> Any.runIfTypeMatches(block: (T) -> Unit) {
+inline fun <reified T> Any.kompanionRunIfTypeMatches(block: (T) -> Unit) {
     if (this is T) {
         block(this)
     }
@@ -280,7 +275,7 @@ inline fun <reified T> Any.runIfTypeMatches(block: (T) -> Unit) {
 /**
  * Ensures that the block is executed only once.
  */
-inline fun runOnce(crossinline block: () -> Unit): () -> Unit {
+inline fun kompanionRunOnce(crossinline block: () -> Unit): () -> Unit {
     var isExecuted = false
     return {
         if (!isExecuted) {
@@ -293,7 +288,7 @@ inline fun runOnce(crossinline block: () -> Unit): () -> Unit {
 /**
  * Lazily evaluates multiple blocks and runs the first one whose condition is true.
  */
-fun lazyEvaluate(vararg blocks: Pair<Boolean, () -> Unit>) {
+fun kompanionLazyEvaluate(vararg blocks: Pair<Boolean, () -> Unit>) {
     for ((condition, block) in blocks) {
         if (condition) {
             block()
@@ -305,10 +300,10 @@ fun lazyEvaluate(vararg blocks: Pair<Boolean, () -> Unit>) {
 /**
  * Executes a block when an element is removed from the list.
  */
-inline fun <T> MutableList<T>.onRemove(crossinline block: (T) -> Unit): MutableList<T> {
+inline fun <T> MutableList<T>.kompanionOnRemove(crossinline block: (T) -> Unit): MutableList<T> {
     return object : MutableList<T> by this {
         override fun remove(element: T): Boolean {
-            val result = this@onRemove.remove(element)
+            val result = this@kompanionOnRemove.remove(element)
             if (result) block(element)
             return result
         }
@@ -318,16 +313,16 @@ inline fun <T> MutableList<T>.onRemove(crossinline block: (T) -> Unit): MutableL
 /**
  * Executes a block after adding or removing elements from the collection.
  */
-inline fun <T> MutableCollection<T>.onModification(crossinline block: () -> Unit): MutableCollection<T> {
+inline fun <T> MutableCollection<T>.kompanionOnModification(crossinline block: () -> Unit): MutableCollection<T> {
     return object : MutableCollection<T> by this {
         override fun add(element: T): Boolean {
-            val result = this@onModification.add(element)
+            val result = this@kompanionOnModification.add(element)
             block()
             return result
         }
 
         override fun remove(element: T): Boolean {
-            val result = this@onModification.remove(element)
+            val result = this@kompanionOnModification.remove(element)
             block()
             return result
         }
@@ -337,7 +332,7 @@ inline fun <T> MutableCollection<T>.onModification(crossinline block: () -> Unit
 /**
  * Transforms a pair into a new instance of another type.
  */
-inline fun <A, B, R> Pair<A, B>.mapTo(transform: (A, B) -> R): R {
+inline fun <A, B, R> Pair<A, B>.kompanionMapTo(transform: (A, B) -> R): R {
     return transform(first, second)
 }
 
@@ -345,13 +340,13 @@ inline fun <A, B, R> Pair<A, B>.mapTo(transform: (A, B) -> R): R {
 /**
  * Toggles the Boolean value.
  */
-fun Boolean.toggle(): Boolean = !this
+fun Boolean.kompanionToggle(): Boolean = !this
 
 
 /**
  * Inline function to capture a reified generic type.
  */
-inline fun <reified T> classOf(): Class<T> = T::class.java
+inline fun <reified T> kompanionClassOf(): Class<T> = T::class.java
 
 
 /**
@@ -391,7 +386,7 @@ inline fun <T> kompnaionRetryWithBackoff(
 /**
  * Memoizes a function with cache expiration after a specified timeout.
  */
-fun <T, R> ((T) -> R).memoizeWithExpiry(timeout: Long, unit: TimeUnit): (T) -> R {
+fun <T, R> ((T) -> R).kompanionMemoizeWithExpiry(timeout: Long, unit: TimeUnit): (T) -> R {
     val cache = ConcurrentHashMap<T, Pair<R, Long>>()
     val expiryTime = unit.toMillis(timeout)
 
@@ -456,7 +451,7 @@ fun <T> ((T) -> Unit).kompanionRateLimit(intervalMs: Long): (T) -> Unit {
  * throttledPrint("Second call") // Ignored if within 1 second of the first
  *
  */
-fun <T> ((T) -> Unit).throttle(intervalMs: Long): (T) -> Unit {
+fun <T> ((T) -> Unit).kompanionThrottle(intervalMs: Long): (T) -> Unit {
     var lastInvocation = 0L
     val lock = Any()
 

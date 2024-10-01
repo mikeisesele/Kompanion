@@ -6,7 +6,7 @@ import androidx.annotation.RequiresApi
 import com.michael.kompanion.preferences.security.enums.CharacterEncoding
 import com.michael.kompanion.preferences.security.enums.EncryptionAlgorithm
 import com.michael.kompanion.preferences.security.enums.EncryptionTransformation
-import com.michael.kompanion.utils.safeNullableReturnableOperation
+import com.michael.kompanion.utils.kompanionSafeNullableReturnableOperation
 import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -22,7 +22,7 @@ object RigelAdvancedEncryption {
         transformation: EncryptionTransformation = EncryptionTransformation.AES_CBC_PKCS5Padding,
         charsetName: CharacterEncoding = CharacterEncoding.UTF_8
     ): String? {
-        return safeNullableReturnableOperation(
+        return kompanionSafeNullableReturnableOperation(
             operation = {
                 val cipher = Cipher.getInstance(transformation.transformation)
                 val keySpec = SecretKeySpec(
@@ -36,7 +36,6 @@ object RigelAdvancedEncryption {
             actionOnException = {
                 throw RuntimeException("Encryption failed", it)
             },
-            exceptionMessage = "advancedEncryptionEncrypt failed"
         )
 
     }
@@ -49,7 +48,7 @@ object RigelAdvancedEncryption {
         transformation: EncryptionTransformation = EncryptionTransformation.AES_CBC_PKCS5Padding,
         charsetName: CharacterEncoding = CharacterEncoding.UTF_8
     ): String? {
-        return safeNullableReturnableOperation(
+        return kompanionSafeNullableReturnableOperation(
             operation = {
                 val cipher = Cipher.getInstance(transformation.transformation)
                 val keySpec = SecretKeySpec(
@@ -64,7 +63,6 @@ object RigelAdvancedEncryption {
             actionOnException = {
                 throw RuntimeException("Decryption failed", it)
             },
-            exceptionMessage = "advancedEncryptionDecrypt failed"
         )
     }
 }

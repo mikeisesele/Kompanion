@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Parcelable
-import com.michael.kompanion.utils.safeNullableReturnableOperation
+import com.michael.kompanion.utils.kompanionSafeNullableReturnableOperation
 import java.io.File
 import java.io.FileOutputStream
 import java.io.Serializable
@@ -51,7 +51,7 @@ inline fun <reified T : Activity> Context.navigateTo(
     function to read from assets folder. fileName would be filename.json
  */
 fun Activity.readFromAssets(fileName: String) : String {
-    return safeNullableReturnableOperation(
+    return kompanionSafeNullableReturnableOperation(
         operation = {
             assets.open(fileName)
                 .bufferedReader()
@@ -61,7 +61,6 @@ fun Activity.readFromAssets(fileName: String) : String {
                     }
                 }
         },
-        exceptionMessage = "ReadFromAssets Error"
     ).orEmpty()
 }
 

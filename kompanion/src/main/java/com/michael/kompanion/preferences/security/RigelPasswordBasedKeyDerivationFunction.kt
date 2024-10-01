@@ -2,7 +2,7 @@ package com.michael.kompanion.preferences.security
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.michael.kompanion.utils.safeNullableReturnableOperation
+import com.michael.kompanion.utils.kompanionSafeNullableReturnableOperation
 import java.security.SecureRandom
 import java.security.spec.KeySpec
 import java.util.Base64
@@ -17,7 +17,7 @@ object RigelPasswordBasedKeyDerivationFunction {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun encrypt(input: String, password: String, params: EncryptionParameters): String? {
-        return safeNullableReturnableOperation(
+        return kompanionSafeNullableReturnableOperation(
             operation = {
                 val saltBytes = generateSalt(params.saltSize)
                 val ivBytes = generateIV(params.ivSize)
@@ -38,7 +38,6 @@ object RigelPasswordBasedKeyDerivationFunction {
                 )
                 Base64.getEncoder().encodeToString(encryptedData)
             },
-            exceptionMessage = "data encryption failed",
             actionOnException = {
                 it?.printStackTrace()
                 throw RuntimeException("Encryption failed", it)
@@ -49,7 +48,7 @@ object RigelPasswordBasedKeyDerivationFunction {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun decrypt(encryptedData: String, password: String, params: EncryptionParameters): String? {
-        return safeNullableReturnableOperation(
+        return kompanionSafeNullableReturnableOperation(
             operation = {
                 val encryptedBytes = Base64.getDecoder().decode(encryptedData)
                 val saltBytes = encryptedBytes.copyOfRange(0, params.saltSize)
@@ -67,7 +66,6 @@ object RigelPasswordBasedKeyDerivationFunction {
                 val decryptedBytes = cipher.doFinal(encryptedContent)
                 String(decryptedBytes)
             },
-            exceptionMessage = "data decryption failed",
             actionOnException = {
                 it?.printStackTrace()
                 throw RuntimeException("Decryption failed", it)

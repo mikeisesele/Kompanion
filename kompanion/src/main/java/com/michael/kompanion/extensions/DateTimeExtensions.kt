@@ -2,7 +2,7 @@ package com.michael.kompanion.extensions
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.michael.kompanion.utils.safeNullableReturnableOperation
+import com.michael.kompanion.utils.kompanionSafeNullableReturnableOperation
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -40,14 +40,13 @@ fun String.toDate(format: String): Date? {
 
     val formatter = SimpleDateFormat(format, Locale.getDefault())
 
-    return safeNullableReturnableOperation(
+    return kompanionSafeNullableReturnableOperation(
         operation = {
             formatter.parse(this)
         },
         actionOnException = {
             it?.printStackTrace()
         },
-        exceptionMessage = "SimpleDateFormat parser failed "
     )
 }
 

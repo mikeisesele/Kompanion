@@ -15,69 +15,70 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-    suspend fun <T> kompanionWithIO(block: suspend CoroutineScope.() -> T): T {
-        return withContext(Dispatchers.IO, block)
+suspend fun <T> kompanionWithIO(block: suspend CoroutineScope.() -> T): T {
+    return withContext(Dispatchers.IO, block)
+}
+
+fun kompanionCoIO(runner: suspend CoroutineScope.() -> Unit) =
+    CoroutineScope(Dispatchers.IO).launch { runner.invoke((this)) }
+
+fun kompanionCoMain(runner: suspend CoroutineScope.() -> Unit) =
+    CoroutineScope(Dispatchers.Main).launch { runner.invoke((this)) }
+
+suspend fun <A, B> Iterable<A>.pmap(f: suspend (A) -> B): List<B> =
+    coroutineScope {
+        map { async { f(it) } }.awaitAll()
     }
 
-    fun kompanionCoIO(runner: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.IO).launch { runner.invoke((this)) }
+suspend fun <T> coAsync(block: suspend () -> T): T = coroutineScope {
+    val deferred = async { block.invoke() }
+    deferred.await()
+}
 
-    fun kompanionCoMain(runner: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.Main).launch { runner.invoke((this)) }
-
-    suspend fun <A, B> Iterable<A>.pmap(f: suspend (A) -> B): List<B> =
-        coroutineScope {
-            map { async { f(it) } }.awaitAll()
-        }
-
-    suspend fun <T> coAsync(block: suspend () -> T): T = coroutineScope {
-        val deferred = async { block.invoke() }
-        deferred.await()
+suspend fun onBackgroundReturnable(block: suspend () -> Int?): Int? {
+    return withContext(Dispatchers.Default) {
+        block()
     }
+}
 
-    suspend fun onBackgroundReturnable(block: suspend () -> Int?) : Int? {
-        return withContext(Dispatchers.Default) {
+suspend fun <T> onBackground(block: suspend () -> T): T {
+    return withContext(Dispatchers.Default) {
+        block()
+    }
+}
+
+
+suspend fun <T> toBackground(block: suspend () -> T) {
+    coroutineScope {
+        async(Dispatchers.IO) {
             block()
-        }
+        }.await()
     }
+}
 
-    suspend fun <T> onBackground(block: suspend () -> T): T {
-        return withContext(Dispatchers.Default) {
+suspend fun <T> toMain(block: suspend () -> T) {
+    coroutineScope {
+        async(Dispatchers.Main) {
             block()
-        }
+        }.await()
     }
-    
-    
-    suspend fun <T> toBackground(block: suspend () -> T) {
-        coroutineScope {
-            async(Dispatchers.IO) {
-                block()
-            }.await()
-        }
+}
+
+
+suspend fun <T> toDefault(block: suspend () -> T) {
+    coroutineScope {
+        async(Dispatchers.Default) {
+            block()
+        }.await()
     }
-
-    suspend fun <T> toMain(block: suspend () -> T) {
-        coroutineScope {
-            async(Dispatchers.Main) {
-                block()
-            }.await()
-        }
-    }
+}
 
 
-    suspend fun <T> toDefault(block: suspend () -> T) {
-        coroutineScope {
-            async(Dispatchers.Default) {
-                block()
-            }.await()
-        }
-    }
-
-
-suspend fun <T> Deferred<T>.awaitOrNull(): T? {
-    return safeReturnableSuspendOperation(
+suspend fun <T> Deferred<T>.kompanionAwaitOrNull(): T? {
+    return kompanionSafeReturnableSuspendOperation(
         operation = {
             await()
         },
-        exceptionMessage = "Deferred operation failed"
     )
 }
 
@@ -103,6 +104,7 @@ suspend fun <T> retry(
 // Flow extension function to combine two flows
 fun <T1, T2> Flow<T1>.combine(other: Flow<T2>): Flow<Pair<T1, T2>> =
     combine(other) { t1, t2 -> Pair(t1, t2) }
+
 fun <T1, T2, R> Flow<T1>.combine(other: Flow<T2>, transform: (T1, T2) -> R): Flow<R> = flow {
     val outerFlow = this@combine
     outerFlow.map { outer ->
@@ -205,7 +207,8 @@ fun <T> kompanionRunInBackgroundAndThen(
  * b. making a database query
  * c. making a file read operation
  */
-suspend fun <T> kompanionWithContextIO(block: suspend () -> T): T = withContext(Dispatchers.IO) { block() }
+suspend fun <T> kompanionWithContextIO(block: suspend () -> T): T =
+    withContext(Dispatchers.IO) { block() }
 
 /**
  * Executes the given suspending block of code asynchronously on the main thread dispatcher and returns its result.
@@ -214,7 +217,8 @@ suspend fun <T> kompanionWithContextIO(block: suspend () -> T): T = withContext(
  * b. making a database update like insert, update, delete
  * c. making a file write operation
  */
-suspend fun <T> kompanionWithContextMain(block: suspend () -> T): T = withContext(Dispatchers.Main) { block() }
+suspend fun <T> kompanionWithContextMain(block: suspend () -> T): T =
+    withContext(Dispatchers.Main) { block() }
 
 /**
  * Executes the given suspending block of code asynchronously on the default dispatcher and returns its result.
@@ -223,23 +227,27 @@ suspend fun <T> kompanionWithContextMain(block: suspend () -> T): T = withContex
  * b.  operation is expensive to execute
  * c. a result is needed
  */
-suspend fun <T> kompanionWthContextDefault(block: suspend () -> T): T = withContext(Dispatchers.Default) { block() }
+suspend fun <T> kompanionWthContextDefault(block: suspend () -> T): T =
+    withContext(Dispatchers.Default) { block() }
 
 
 /**
  * Executes the given suspending block of code asynchronously on the IO dispatcher and returns its result as a Deferred.
  */
-fun <T> kompanionAsyncIO(block: suspend () -> T): Deferred<T> = CoroutineScope(Dispatchers.IO).async { block() }
+fun <T> kompanionAsyncIO(block: suspend () -> T): Deferred<T> =
+    CoroutineScope(Dispatchers.IO).async { block() }
 
 /**
  * Executes the given suspending block of code asynchronously on the main thread dispatcher and returns its result as a Deferred.
  */
-fun <T> kompanionAsyncMain(block: suspend () -> T): Deferred<T> = CoroutineScope(Dispatchers.Main).async { block() }
+fun <T> kompanionAsyncMain(block: suspend () -> T): Deferred<T> =
+    CoroutineScope(Dispatchers.Main).async { block() }
 
 /**
  * Executes the given suspending block of code asynchronously on the default dispatcher and returns its result as a Deferred.
  */
-fun <T> kompanionAsyncDefault(block: suspend () -> T): Deferred<T> = CoroutineScope(Dispatchers.Default).async { block() }
+fun <T> kompanionAsyncDefault(block: suspend () -> T): Deferred<T> =
+    CoroutineScope(Dispatchers.Default).async { block() }
 
 /**
  * Executes the given suspending block of code asynchronously and calls the specified actions when it completes or throws an exception.
