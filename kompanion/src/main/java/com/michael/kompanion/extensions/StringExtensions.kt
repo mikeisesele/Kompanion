@@ -113,3 +113,4 @@ fun String.kompanionCountVowels(): Int = count { it.lowercaseChar() in "aeiou" }
 
 fun kompanionEmptyString() = ""
 
+fun String.kompanionNullifyEmpty() = this.ifBlank { null }
