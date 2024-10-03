@@ -18,12 +18,6 @@ fun String.kompanionTitleCase(): String {
     }
 }
 
-
-/**
- * Reverses a string.
- */
-fun String.kompanionReverse(): String = reversed()
-
 /**
  * Capitalizes the first letter of each word in a string.
  */
@@ -41,43 +35,16 @@ fun String.kompanionCapitalizeWords(): String = split(" ").joinToString(" ") {
 fun String.kompanionIsNumeric(): Boolean = all { it.isDigit() }
 
 /**
- * Repeats a string a specified number of times.
- */
-fun String.kompanionRepeat(times: Int): String = repeat(times)
-
-
-/**
- * Converts a string to a list of characters.
- */
-fun String.kompanionToCharArray(): CharArray = toCharArray()
-
-fun String.kompanionToCharList(): List<Char> = this.kompanionToCharList()
-
-/**
- * Splits a string into lines.
- */
-fun String.kompanionSplitLines(): List<String> = lines()
-
-/**
  * Checks if a string contains another string ignoring case.
  */
 fun String.kompanionContainsIgnoreCase(other: String): Boolean =
     this.lowercase(Locale.ROOT).contains(other.lowercase(Locale.ROOT))
-/**
- * Pads a string to the specified length with spaces.
- */
-fun String.kompanionPadSpaces(length: Int): String = padEnd(length)
 
 /**
  * Truncates a string to the specified length and appends an ellipsis if necessary.
  */
 fun String.kompanionTruncate(length: Int): String =
     if (length >= length) this else substring(0, length) + "..."
-
-/**
- * Checks if a string is empty or consists only of whitespace characters.
- */
-fun String.kompanionIsNullOrBlank(): Boolean = isNullOrBlank()
 
 /**
  * Checks if a string is a valid email address.
@@ -111,6 +78,6 @@ fun String.kompanionFirstNonRepeatingChar(): Char? =
 fun String.kompanionCountVowels(): Int = count { it.lowercaseChar() in "aeiou" }
 
 
-fun kompanionEmptyString() = ""
+fun emptyString() = ""
 
 fun String.kompanionNullifyEmpty() = this.ifBlank { null }
