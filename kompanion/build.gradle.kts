@@ -38,13 +38,17 @@ android {
     }
 }
 
+tasks.withType<Jar> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Exclude duplicates
+}
+
 tasks.dokkaHtml {
-    outputDirectory.set(file("../dPrefsDocumentation/html"))
+    outputDirectory.set(file("../kompanionDocumentation/html"))
 }
 
 tasks.register("cleanDokkaModuleDocs") {
     doLast {
-        delete(file("../dPrefsDocumentation/html"))
+        delete(file("../kompanionDocumentation/html"))
     }
 }
 
@@ -53,7 +57,7 @@ tasks.register<Exec>("createDokkaModuleDocs") {
 }
 
 tasks.dokkaHtml {
-    outputDirectory.set(file("../dPrefsDocumentation/html"))
+    outputDirectory.set(file("../kompanionDocumentation/html"))
 //    val dPrefsLogo = file("../DPrefs/src/main/java/com/dsofttech/dprefs/d_prefs_logo.svg")
     val dokkaBaseConfiguration = """
     {
@@ -70,6 +74,7 @@ tasks.dokkaHtml {
 tasks.register("androidKDocJar", Jar::class) {
     archiveClassifier.set("kdoc")
     from(tasks["dokkaHtml"])
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 tasks.dokkaHtml.configure {
