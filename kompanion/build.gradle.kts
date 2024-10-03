@@ -87,7 +87,7 @@ publishing {
         create<MavenPublication>("release") {
             groupId = "com.mikeisesele"
             artifactId = "kompanion"
-            version = "1.3.3"
+            version = "1.4.0"
             artifact(tasks["androidKDocJar"])
 
             afterEvaluate {
