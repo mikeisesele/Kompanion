@@ -354,7 +354,10 @@ fun Int.kompanionNextPrime(): Int {
 /**
  * Returns true if the number is a Kaprekar number.
  * A Kaprekar number is a number whose square can be split into two parts that sum to the original number.
- * Example: 45^2 = 2025, and 20 + 25 = 45.
+ *
+ * ```Kt
+ * Example: 45^2 = 2025, and 20 + 25 = 45
+ * ```
  */
 fun Int.kompanionIsKaprekar(): Boolean {
     val square = (this * this).toString()
@@ -492,7 +495,9 @@ fun Int.kompanionIsSpyNumber(): Boolean {
 /**
  * Checks if the number is an automorphic number.
  * An automorphic number is a number whose square ends with the same digits as the number itself.
+ * ```Kt
  * Example: 25^2 = 625, which ends in 25.
+ * ```
  */
 fun Int.kompanionIsAutomorphic(): Boolean = (this * this).toString().endsWith(this.toString())
 
@@ -500,7 +505,9 @@ fun Int.kompanionIsAutomorphic(): Boolean = (this * this).toString().endsWith(th
 /**
  * Returns true if the number is a strong number.
  * A strong number is a number where the sum of the factorial of its digits equals the number itself.
+ * ```Kt
  * Example: 145 = 1! + 4! + 5!.
+ * ```
  */
 fun Int.kompanionIsStrongNumber(): Boolean {
     val factorial = { n: Int -> (1..n).fold(1L) { acc, i -> acc * i } }

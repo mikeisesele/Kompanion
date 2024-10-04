@@ -4,15 +4,18 @@ package com.michael.kompanion.classes
 /**
  * Event bus for broadcasting and listening to events within the same process.
  *
+ * ```Kt
+ *
  * data class MessageEvent(val message: String)
  *
- * val bus = EventBus()
+ * val bus = KompanionEventBus()
  *
  * bus.subscribe(MessageEvent::class.java) {
  *     println("Received message: ${it.message}")
  * }
  *
  * bus.publish(MessageEvent("Hello, World!")) // Output: Received message: Hello, World!
+ * ```
  *
  */
 class KompanionEventBus {

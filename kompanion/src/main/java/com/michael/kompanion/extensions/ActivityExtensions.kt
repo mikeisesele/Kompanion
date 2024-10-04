@@ -11,12 +11,15 @@ import java.io.FileOutputStream
 import java.io.Serializable
 
 /**
- * @param flags Optional flags to be added to the Intent.
+ * @param flags Optional flags to be added to the Intent
  * @param extras Optional extras to be added to the Intent.
  *
- * Example of how to use navigateTo function:
+ *
+ * ```Kt
+ *
  * Navigate from MainActivity to SecondActivity with FLAG_ACTIVITY_CLEAR_TOP flag
  * navigateTo<SecondActivity>(flags = Intent.FLAG_ACTIVITY_CLEAR_TOP)
+ * ```
  *
  */
 inline fun <reified T : Activity> Context.kompanionNavigateTo(
@@ -64,12 +67,18 @@ fun Activity.kompanionReadFromAssets(fileName: String) : String {
     ).orEmpty()
 }
 
-fun Activity.kompanionFinishWithResult(resultCode: Int, resultIntent: Intent? = null) {
+
+/*
+    function to finish activity with result code and result intent
+ */
+fun Activity.kompanionFinishActivityWithResult(resultCode: Int, resultIntent: Intent? = null) {
     setResult(resultCode, resultIntent)
     finish()
 }
 
-
+/*
+    function to take screenshot of the activity
+ */
 fun Activity.kompanionTakeScreenshot(): Bitmap? {
     val view = window.decorView.rootView
     view.isDrawingCacheEnabled = true
@@ -78,6 +87,9 @@ fun Activity.kompanionTakeScreenshot(): Bitmap? {
     return bitmap
 }
 
+/*
+    function to take screenshot of the activity and save it to the external cache directory
+ */
 fun Activity.kompanionTakeScreenshotAsFile(): File? {
     val bitmap = kompanionTakeScreenshot() ?: return null
     val file = File(externalCacheDir, "screenshot_${System.currentTimeMillis()}.png")

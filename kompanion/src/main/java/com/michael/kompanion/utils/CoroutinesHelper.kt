@@ -222,12 +222,19 @@ fun CoroutineScope.launchMain(block: suspend CoroutineScope.() -> Unit) {
 
 /**
  * Runs a given suspending block of code asynchronously and ignores the result.
+ *
+ * @param block The suspending block of code to run.
+ * @return A Job representing the coroutine.
  */
 fun kompanionLaunch(block: suspend CoroutineScope.() -> Unit): Job =
     CoroutineScope(Dispatchers.Default).launch { block() }
 
 /**
  * Creates a coroutine that runs the given suspending block of code and repeats it periodically until the coroutine is cancelled.
+ *
+ * @param intervalMillis The interval in milliseconds between executions.
+ * @param block The suspending block of code to repeat.
+ * @return A Job representing the coroutine.
  */
 fun kompanionRepeatPeriodically(intervalMillis: Long, block: suspend () -> Unit): Job =
     CoroutineScope(Dispatchers.Default).launch {
@@ -237,9 +244,15 @@ fun kompanionRepeatPeriodically(intervalMillis: Long, block: suspend () -> Unit)
         }
     }
 
-
 /**
  * Creates a coroutine that runs the given suspending block of code with exponential backoff delay and retries it until it succeeds or the max retry count is reached.
+ *
+ * @param maxRetries The maximum number of retry attempts.
+ * @param initialDelayMillis The initial delay in milliseconds before the first retry.
+ * @param factor The multiplier for the delay after each retry.
+ * @param block The suspending block of code to execute.
+ * @return The result of the block if successful.
+ * @throws Exception If the maximum retries are exceeded.
  */
 suspend fun <T> kompanionRetryWithExponentialBackoff(
     maxRetries: Int = 3,
@@ -261,6 +274,8 @@ suspend fun <T> kompanionRetryWithExponentialBackoff(
 
 /**
  * Cancels the given job if it's not null and is active.
+ *
+ * @param job The job to cancel.
  */
 fun kompanionCancelJob(job: Job?) {
     job?.let {
@@ -270,6 +285,9 @@ fun kompanionCancelJob(job: Job?) {
 
 /**
  * Measures the execution time of the given suspending block of code and returns it in milliseconds.
+ *
+ * @param block The suspending block of code to measure.
+ * @return The execution time in milliseconds.
  */
 suspend fun kompanionMeasureTimeMillis(block: suspend () -> Unit): Long {
     val startTime = System.currentTimeMillis()
@@ -279,6 +297,9 @@ suspend fun kompanionMeasureTimeMillis(block: suspend () -> Unit): Long {
 
 /**
  * Runs the given suspending block of code in a background thread, then switches to the main thread to execute the specified action with the result.
+ *
+ * @param backgroundBlock The suspending block of code to run in the background.
+ * @param mainThreadAction The action to execute on the main thread with the result.
  */
 fun <T> kompanionRunInBackgroundAndThen(
     backgroundBlock: suspend () -> T,
@@ -292,55 +313,77 @@ fun <T> kompanionRunInBackgroundAndThen(
 
 /**
  * Executes the given suspending block of code asynchronously on the IO dispatcher and returns its result.
- * should be used when
+ * Should be used when:
  * a. making a network call
  * b. making a database query
  * c. making a file read operation
+ *
+ * @param block The suspending block of code to execute.
+ * @return The result of the block.
  */
 suspend fun <T> kompanionWithContextIO(block: suspend () -> T): T =
     withContext(Dispatchers.IO) { block() }
 
 /**
  * Executes the given suspending block of code asynchronously on the main thread dispatcher and returns its result.
- * should be used when
+ * Should be used when:
  * a. updating UI
  * b. making a database update like insert, update, delete
  * c. making a file write operation
+ *
+ * @param block The suspending block of code to execute.
+ * @return The result of the block.
  */
 suspend fun <T> kompanionWithContextMain(block: suspend () -> T): T =
     withContext(Dispatchers.Main) { block() }
 
 /**
  * Executes the given suspending block of code asynchronously on the default dispatcher and returns its result.
- * should be used when
+ * Should be used when:
  * a. operation is not tied to IO or UI thread
- * b.  operation is expensive to execute
+ * b. operation is expensive to execute
  * c. a result is needed
+ *
+ * @param block The suspending block of code to execute.
+ * @return The result of the block.
  */
-suspend fun <T> kompanionWthContextDefault(block: suspend () -> T): T =
+suspend fun <T> kompanionWithContextDefault(block: suspend () -> T): T =
     withContext(Dispatchers.Default) { block() }
-
 
 /**
  * Executes the given suspending block of code asynchronously on the IO dispatcher and returns its result as a Deferred.
+ *
+ * @param block The suspending block of code to execute.
+ * @return A Deferred representing the result of the block.
  */
 fun <T> kompanionAsyncIO(block: suspend () -> T): Deferred<T> =
     CoroutineScope(Dispatchers.IO).async { block() }
 
 /**
  * Executes the given suspending block of code asynchronously on the main thread dispatcher and returns its result as a Deferred.
+ *
+ * @param block The suspending block of code to execute.
+ * @return A Deferred representing the result of the block.
  */
 fun <T> kompanionAsyncMain(block: suspend () -> T): Deferred<T> =
     CoroutineScope(Dispatchers.Main).async { block() }
 
 /**
  * Executes the given suspending block of code asynchronously on the default dispatcher and returns its result as a Deferred.
+ *
+ * @param block The suspending block of code to execute.
+ * @return A Deferred representing the result of the block.
  */
 fun <T> kompanionAsyncDefault(block: suspend () -> T): Deferred<T> =
     CoroutineScope(Dispatchers.Default).async { block() }
 
 /**
  * Executes the given suspending block of code asynchronously and calls the specified actions when it completes or throws an exception.
+ *
+ * @param block The suspending block of code to execute.
+ * @param onComplete Action to execute upon successful completion.
+ * @param onError Action to execute if an error occurs.
+ * @return A Job representing the coroutine.
  */
 fun kompanionAsyncWithCallbacks(
     block: suspend () -> Unit,
@@ -355,8 +398,12 @@ fun kompanionAsyncWithCallbacks(
     }
 }
 
-/*
+/**
 * Cancels a current Job before starting a new one.
+*
+* @param currentJob The current job to cancel.
+* @param block The suspending block of code to run in the new job.
+* @return A Job representing the new coroutine.
 */
 fun kompanionCancelAndStartNewJob(
     currentJob: Job?,
@@ -370,6 +417,8 @@ fun kompanionCancelAndStartNewJob(
 
 /**
  * Executes a list of suspending functions in parallel and collects their results.
+ *
+ * ```Kt
  *
  * suspend fun task1(): String {
  *     delay(1000L)
@@ -385,11 +434,10 @@ fun kompanionCancelAndStartNewJob(
  *     val results = listOf(::task1, ::task2).parallelExecute()
  *     println(results) // Output: [Task 1 result, Task 2 result]
  * }
- *
+ *```
+ * @return A list of results from the executed suspending functions.
  */
 suspend fun <T> List<suspend () -> T>.kompanionParallelExecute(): List<T> = coroutineScope {
     map { async { it() } }.awaitAll()
 }
-
-
 

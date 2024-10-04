@@ -6,8 +6,10 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 
 
-/*
+/**
  * Deep equals for data classes using reflection.
+ *
+ * ```Kt
  *
  * data class Person(val name: String, val age: Int, val friends: List<Person>)
  *
@@ -16,6 +18,11 @@ import kotlin.reflect.full.primaryConstructor
  *
  * println(deepEquals(person1, person2))  // Output: true
  *
+ * ```
+ *
+ * @param obj1 The first object to compare.
+ * @param obj2 The second object to compare.
+ * @return True if both objects are deeply equal, otherwise false.
  */
 fun <T : Any> kompanionDeepEquals(obj1: T?, obj2: T?): Boolean {
     if (obj1 == null || obj2 == null) return obj1 === obj2
@@ -37,10 +44,10 @@ fun <T : Any> kompanionDeepEquals(obj1: T?, obj2: T?): Boolean {
     return true
 }
 
-
-
 /**
  * Deep copy for data classes using reflection.
+ *
+ * ```Kt
  *
  * data class Address(val city: String)
  * data class Person(val name: String, val address: Address)
@@ -53,11 +60,9 @@ fun <T : Any> kompanionDeepEquals(obj1: T?, obj2: T?): Boolean {
  * println(person1) // Output: Person(name=John, address=Address(city=New York))
  * println(person2) // Output: Person(name=John, address=Address(city=San Francisco))
  *
+ * ```
  *
- */
-
-/**
- * Deep copy for data classes using reflection.
+ * @return A deep copy of the object.
  */
 fun <T : Any> T.kompanionDeepCopyObject(): T {
     val kClass: KClass<T> = this::class as KClass<T>
@@ -77,10 +82,12 @@ fun <T : Any> T.kompanionDeepCopyObject(): T {
     return constructor.call(*args)
 }
 
-// Extension function for deep copy of nullable types
+/**
+ * Extension function for deep copy of nullable types.
+ *
+ * @return A deep copy of the object or null if the original object is null.
+ */
 fun <T : Any> T?.deepCopy(): T? = this?.deepCopy()
-
-
 
 /**
  * Command interface for actions.
@@ -92,11 +99,16 @@ interface Command {
 /**
  * Extension function to convert a lambda into a Command.
  *
+ * ```Kt
+ *
  * val printCommand = { println("Print command executed!") }.toCommand()
  * val anotherCommand = { println("Another command!") }.toCommand()
  *
  * kompanionExecuteCommands(printCommand, anotherCommand)
  *
+ * ```
+ *
+ * @return A Command instance that wraps the lambda.
  */
 fun (() -> Unit).kompanionToCommand(): Command {
     return object : Command {
@@ -107,22 +119,20 @@ fun (() -> Unit).kompanionToCommand(): Command {
 }
 
 /**
- * Extension function to convert a lambda into a Command.
+ * Executes a series of Command instances.
  *
- * val printCommand = { println("Print command executed!") }.toCommand()
- * val anotherCommand = { println("Another command!") }.toCommand()
- *
- * kompanionExecuteCommands(printCommand, anotherCommand)
- *
+ * @param commands Vararg of Command instances to execute.
  */
 fun kompanionExecuteCommands(vararg commands: Command) {
     commands.forEach { it.execute() }
 }
 
-
-
 /**
  * Memoizes a function with cache expiration after a specified timeout.
+ *
+ * @param timeout The duration after which the cache expires.
+ * @param unit The time unit of the timeout duration.
+ * @return A memoized version of the function.
  */
 fun <T, R> ((T) -> R).kompanionMemoizeWithExpiry(timeout: Long, unit: TimeUnit): (T) -> R {
     val cache = ConcurrentHashMap<T, Pair<R, Long>>()
@@ -141,11 +151,14 @@ fun <T, R> ((T) -> R).kompanionMemoizeWithExpiry(timeout: Long, unit: TimeUnit):
 /**
  * Debounces a function, preventing it from being called too frequently.
  *
- * val debouncedPrint = { msg: String -> println(msg) }.debounce(1000L)
  *
- * debouncedPrint("First call")  // Prints
- * debouncedPrint("Second call") // Ignored if within 1 second of the first
- * (Same as kompanionRateLimit)
+ * ```Kt
+ *
+ * val debouncedPrint = { msg: String -> println(msg) }.debounce(1000L)
+ * ```
+ * @param waitMs The minimum wait time between consecutive calls.
+ * @return A debounced version of the function.
+ *
  */
 fun <T> ((T) -> Unit).kompanionFunctionDebounce(waitMs: Long): (T) -> Unit {
     var lastInvocation = 0L
@@ -158,15 +171,16 @@ fun <T> ((T) -> Unit).kompanionFunctionDebounce(waitMs: Long): (T) -> Unit {
     }
 }
 
-
 /**
  * Rate limits a function to only allow execution every `intervalMs` milliseconds.
  *
+ * ```Kt
  * val rateLimitedPrint = { msg: String -> println(msg) }.rateLimit(1000L)
+ * ```
  *
- * rateLimitedPrint("First")  // Prints
- * rateLimitedPrint("Second") // Ignored if within 1 second of first call
- * (Same as kompanionFunctionDebounce)
+ * @param intervalMs The time interval between allowed executions.
+ * @return A rate-limited version of the function.
+ *
  */
 fun <T> ((T) -> Unit).kompanionRateLimit(intervalMs: Long): (T) -> Unit {
     var lastInvocation = 0L
@@ -183,10 +197,12 @@ fun <T> ((T) -> Unit).kompanionRateLimit(intervalMs: Long): (T) -> Unit {
 /**
  * Throttles a suspending function to only allow execution once per `intervalMs` milliseconds.
  *
- * val throttledPrint = { msg: String -> println(msg) }.throttle(1000L)
+ * ```Kt
  *
- * throttledPrint("First call")  // Prints
- * throttledPrint("Second call") // Ignored if within 1 second of the first
+ * val throttledPrint = { msg: String -> println(msg) }.throttle(1000L)
+ * ```
+ * @param intervalMs The time interval between allowed executions.
+ * @return A throttled version of the suspending function.
  *
  */
 fun <T> ((T) -> Unit).kompanionThrottle(intervalMs: Long): (T) -> Unit {
@@ -207,12 +223,13 @@ fun <T> ((T) -> Unit).kompanionThrottle(intervalMs: Long): (T) -> Unit {
 /**
  * Coroutine version of throttle for suspending functions.
  *
- * val throttledPrintCoroutine = { msg: String -> println(msg) }.throttleCoroutine(1000L)
+ * ```Kt
  *
- * runBlocking {
- *     throttledPrintCoroutine("First coroutine call")
- *     throttledPrintCoroutine("Second coroutine call")
- * }
+ * val throttledPrintCoroutine = { msg: String -> println(msg) }.throttleCoroutine(1000L)
+ * ```
+ *
+ * @param intervalMs The time interval between allowed executions.
+ * @return A throttled coroutine version of the function.
  *
  */
 fun <T> ((T) -> Unit).kompanionThrottleCoroutine(intervalMs: Long): suspend (T) -> Unit {
@@ -229,4 +246,3 @@ fun <T> ((T) -> Unit).kompanionThrottleCoroutine(intervalMs: Long): suspend (T) 
         }
     }
 }
-

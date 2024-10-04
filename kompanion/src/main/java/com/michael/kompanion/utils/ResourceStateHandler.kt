@@ -8,12 +8,41 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 
+/**
+ * A sealed class representing the resource state in a coroutine operation.
+ * It can represent various states such as loading, success, error, or failure.
+ *
+ * @param T The type of data associated with the resource.
+ */
 sealed class KompanionResource<out T> {
+
+    /**
+     * Represents a loading state.
+     */
     data object Loading : KompanionResource<Nothing>()
+
+    /**
+     * Represents a successful operation with associated data.
+     *
+     * @param data The data returned from the successful operation.
+     */
     data class Success<T>(val data: T) : KompanionResource<T>()
+
+    /**
+     * Represents an error state with an error message.
+     *
+     * @param message The error message describing the issue.
+     */
     data class Error(val message: String) : KompanionResource<Nothing>()
+
+    /**
+     * Represents a failure state with an associated exception.
+     *
+     * @param exception The exception that occurred during the operation.
+     */
     data class Failure(val exception: Any) : KompanionResource<Nothing>()
 }
+
 
 
 /**

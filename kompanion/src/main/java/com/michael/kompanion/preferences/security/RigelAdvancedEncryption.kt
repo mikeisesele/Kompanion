@@ -14,6 +14,18 @@ import javax.crypto.spec.SecretKeySpec
 
 object RigelAdvancedEncryption {
 
+    /**
+  * Provides advanced encryption and decryption methods using the specified algorithm and transformation.
+  *
+  * @param input The string to be encrypted.
+  * @param secretKey The secret key used for encryption.
+  * @param algorithm The encryption algorithm to be used, defaulting to AES.
+  * @param transformation The transformation to be applied, defaulting to AES_CBC_PKCS5Padding.
+  * @param charsetName The character encoding to be used, defaulting to UTF_8.
+  * @return The encrypted string, or null if the operation fails.
+  *
+  * @throws RuntimeException If encryption fails.
+  */
     @RequiresApi(Build.VERSION_CODES.O)
     fun advancedEncryptionEncrypt(
         input: String,
@@ -37,9 +49,20 @@ object RigelAdvancedEncryption {
                 throw RuntimeException("Encryption failed", it)
             },
         )
-
     }
 
+    /**
+     * Decrypts an encrypted string using the specified algorithm and transformation.
+     *
+     * @param input The string to be decrypted.
+     * @param secretKey The secret key used for decryption.
+     * @param algorithm The encryption algorithm to be used, defaulting to AES.
+     * @param transformation The transformation to be applied, defaulting to AES_CBC_PKCS5Padding.
+     * @param charsetName The character encoding to be used, defaulting to UTF_8.
+     * @return The decrypted string, or null if the operation fails.
+     *
+     * @throws RuntimeException If decryption fails.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     fun advancedEncryptionDecrypt(
         input: String,
@@ -65,5 +88,6 @@ object RigelAdvancedEncryption {
             },
         )
     }
+
 }
 

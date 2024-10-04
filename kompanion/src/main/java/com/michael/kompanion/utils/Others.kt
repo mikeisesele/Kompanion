@@ -18,7 +18,6 @@ import kotlin.coroutines.coroutineContext
  * should not have a return type.
  *
  * @param operation The operation to be executed, taking no parameters and having no return type.
- * @param exceptionMessage The log message associated with the exception.
  * @param actionOnException An optional action to be executed in case of an exception.
  *                          It takes no parameters and is typically used for cleanup or logging.
  */
@@ -43,7 +42,6 @@ fun kompanionSafeOperation(
  * @param operation The operation to be executed, returning a nullable result.
  * @param actionOnException An optional action to be executed in case of an exception.
  *                          It takes an Exception parameter and is typically used for cleanup or logging.
- * @param exceptionMessage The log message associated with the exception.
  * @return The result of the operation or null in case of an exception.
  */
 fun <T> kompanionSafeNullableReturnableOperation(
@@ -70,7 +68,6 @@ fun <T> kompanionSafeNullableReturnableOperation(
  * @param operation The suspend operation to be executed.
  * @param actionOnException An optional action to be executed in case of an exception.
  *                          It takes a nullable string parameter representing the error message.
- * @param exceptionMessage The log message associated with the exception.
  */
 suspend fun <T> kompanionSafeSuspendOperation(
     operation: suspend () -> T,
@@ -93,7 +90,6 @@ suspend fun <T> kompanionSafeSuspendOperation(
  * must have a nullable return type.
  *
  * @param operation The operation to be executed, returning a nullable result.
- * @param exceptionMessage The log message associated with the exception.
  * @param actionOnException An optional action to be executed in case of an exception.
  *                          It takes a nullable string parameter representing the error message.
  * @return The result of the operation or null in case of an exception.

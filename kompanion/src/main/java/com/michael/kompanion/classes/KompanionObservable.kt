@@ -3,12 +3,15 @@ package com.michael.kompanion.classes
 /**
  * Observable class with support for multiple subscribers.
  *
+ * ```Kt
+ *
  * val observable = Observable(0)
  *
  * observable.subscribe { println("Observer 1: $it") }
  * observable.subscribe { println("Observer 2: $it") }
  *
  * observable.setValue(10) // Both observers are notified
+ * ```
  *
  */
 class KompanionObservable<T>(private var value: T) {

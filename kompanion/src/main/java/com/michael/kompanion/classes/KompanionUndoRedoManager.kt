@@ -11,8 +11,7 @@ interface Command {
 /**
  * Invoker to manage command execution with undo/redo support.
  *
- * example
- *
+ * ```Kt
  *
  * class ChangeTextCommand(private val editor: TextEditor, private val newText: String) : Command {
  *     private val oldText: String = editor.text
@@ -33,7 +32,7 @@ interface Command {
  *
  * Usage
  *
-*      val editor = TextEditor()
+ *     val editor = TextEditor()
  *     val undoRedoManager = KompanionUndoRedoManager()
  *
  *     // Execute a command to change the text
@@ -49,7 +48,7 @@ interface Command {
  *     // Redo the change
  *     undoRedoManager.redo()
  *     println("After redo: ${editor.text}") // Output: Hello, World!
- *
+ *```
  */
 class KompanionUndoRedoManager {
     private val undoStack = mutableListOf<Command>()

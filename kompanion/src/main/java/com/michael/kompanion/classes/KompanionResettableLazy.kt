@@ -21,10 +21,16 @@ class KompanionResettableLazy<T>(private val initializer: () -> T) {
 /**
  * Creates a new instance of [KompanionResettableLazy] with the provided [initializer].
  *
+ * ```Kt
+ *
  * val lazyValue = resettableLazy { "Initialized" }
+ *
  * println(lazyValue.getValue()) // Initialized
+ *
  * lazyValue.reset()
+ *
  * println(lazyValue.getValue()) // empty value again after reset
+ * ```
  *
  */
 fun <T> resettableLazy(initializer: () -> T): KompanionResettableLazy<T> {

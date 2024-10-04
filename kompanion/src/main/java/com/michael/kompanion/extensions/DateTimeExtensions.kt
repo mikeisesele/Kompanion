@@ -14,143 +14,11 @@ import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-//
-//// Extension function to convert date string to readable format
-//@RequiresApi(Build.VERSION_CODES.O)
-//fun String.kompanionToReadableDate(): String {
-//    // Define the input format (yyyy-MM-dd HH:mm:ss)
-//    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-//    // Parse the string to a LocalDateTime object
-//    val dateTime = LocalDateTime.parse(this, inputFormatter)
-//
-//    // Define the output format (d MMMM yyyy)
-//    val outputFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.getDefault())
-//
-//    // Return the formatted date string
-//    return dateTime.format(outputFormatter)
-//}
-//
-//
-//fun Date.kompanionFormatToString(format: String): String {
-//    val formatter = SimpleDateFormat(format, Locale.getDefault())
-//    return formatter.format(this)
-//}
-//
-//fun String.kompanionToDate(format: String): Date? {
-//
-//    val formatter = SimpleDateFormat(format, Locale.getDefault())
-//
-//    return kompanionSafeNullableReturnableOperation(
-//        operation = {
-//            formatter.parse(this)
-//        },
-//        actionOnException = {
-//            it?.printStackTrace()
-//        },
-//    )
-//}
-//
-//fun Date.kompanionIsToday(): Boolean {
-//    val today = Calendar.getInstance()
-//    val date = Calendar.getInstance()
-//    date.time = this
-//    return today.get(Calendar.YEAR) == date.get(Calendar.YEAR) &&
-//            today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR)
-//}
-//
-//
-//@RequiresApi(Build.VERSION_CODES.O)
-//fun ZonedDateTime?.kompanionIsWithinDaysFromToday(days: Long): Boolean = this?.let {
-//    val currentTime = ZonedDateTime.now(ZoneId.systemDefault())
-//    it.isAfter(currentTime.minusDays(days)) && it.kompanionIsBeforeOrEqual(currentTime)
-//} ?: false
-//
-//@RequiresApi(Build.VERSION_CODES.O)
-//fun ZonedDateTime.kompanionIsBeforeOrEqual(other: ZonedDateTime): Boolean = isBefore(other) || isEqual(other)
-//
-//
-//@RequiresApi(Build.VERSION_CODES.O)
-//fun LocalDateTime.kompanionToReadable(): String {
-//    val date = LocalDate.now()
-//
-//    val day = when {
-//        this.year == date.year && this.dayOfYear == date.dayOfYear -> {
-//            "Today"
-//        }
-//
-//        this.year == date.year && this.dayOfYear == date.dayOfYear - 1 -> {
-//            "Yesterday"
-//        }
-//
-//        else -> {
-//            "${this.dayOfWeek}"
-//        }
-//    }
-//
-//    val hour = if (this.hour > 12) {
-//        this.hour - 12
-//    } else {
-//        this.hour
-//    }
-//
-//    val minute = if (this.minute < 10) {
-//        "0${this.minute}"
-//    } else {
-//        this.minute
-//    }
-//
-//    val amPm = if (this.hour >= 12) {
-//        "PM"
-//    } else {
-//        "AM"
-//    }
-//
-//    return "$day: $hour:$minute $amPm"
-//}
-//
-//@RequiresApi(Build.VERSION_CODES.O)
-//fun LocalDateTime.kompanionToReadableWeekDay(): String {
-//    val today = LocalDate.now()
-//
-//    return when {
-//        this.year == today.year && this.dayOfYear == today.dayOfYear -> {
-//            "Today"
-//        }
-//        this.year == today.year && this.dayOfYear == today.dayOfYear - 1 -> {
-//            "Yesterday"
-//        }
-//        else -> {
-//            "${this.dayOfWeek}, ${this.month} ${this.dayOfMonth}, ${this.year}"
-//        }
-//    }
-//}
-//
-//@RequiresApi(Build.VERSION_CODES.O)
-//fun LocalDateTime.kompanionToReadableTime(): String {
-//    val hour = if (this.hour > 12) {
-//        this.hour - 12
-//    } else {
-//        this.hour
-//    }
-//
-//    val minute = if (this.minute < 10) {
-//        "0${this.minute}"
-//    } else {
-//        this.minute.toString()
-//    }
-//
-//    val amPm = if (this.hour >= 12) {
-//        "PM"
-//    } else {
-//        "AM"
-//    }
-//
-//    return "$hour:$minute $amPm"
-//}
 
-
-// Converts a date string in the format "yyyy-MM-dd HH:mm:ss" to a more readable format "dd MMMM yyyy".
-// Requires API level 26 (Android O) or above as it uses LocalDateTime and DateTimeFormatter.
+/*
+ * Converts a date string in the format "yyyy-MM-dd HH:mm:ss" to a more readable format "dd MMMM yyyy".
+ * Requires API level 26 (Android O) or above as it uses LocalDateTime and DateTimeFormatter.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun String.kompanionToReadableDate(): String {
     val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
@@ -159,15 +27,19 @@ fun String.kompanionToReadableDate(): String {
     return dateTime.format(outputFormatter)
 }
 
-// Converts a Date object into a formatted string based on the provided format.
-// The format follows the SimpleDateFormat patterns (e.g., "dd/MM/yyyy").
+/*
+ * Converts a Date object into a formatted string in the specified format.
+ * The format follows the SimpleDateFormat patterns (e.g., "dd/MM/yyyy").
+ */
 fun Date.kompanionFormatToString(format: String): String {
     val formatter = SimpleDateFormat(format, Locale.getDefault())
     return formatter.format(this)
 }
 
-// Parses a string into a Date object based on the specified format.
-// Returns null if parsing fails and logs the exception.
+/*
+ * Parses a string into a Date object based on the specified format.
+ * The format follows the SimpleDateFormat patterns (e.g., "dd/MM/yyyy").
+ */
 fun String.kompanionToDate(format: String): Date? {
     val formatter = SimpleDateFormat(format, Locale.getDefault())
     return kompanionSafeNullableReturnableOperation(
@@ -176,8 +48,10 @@ fun String.kompanionToDate(format: String): Date? {
     )
 }
 
-// Checks if the current Date object represents today's date.
-// Compares both the year and day of the year to determine if the date is today.
+/*
+ * Checks if the current Date object represents today's date.
+ * Compares both the year and day of the year to determine if the date is today.
+ */
 fun Date.kompanionIsToday(): Boolean {
     val today = Calendar.getInstance()
     val date = Calendar.getInstance()
@@ -186,23 +60,31 @@ fun Date.kompanionIsToday(): Boolean {
             today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR)
 }
 
-// Checks if a ZonedDateTime is within a specified number of days from today.
-// Returns false if the ZonedDateTime is null. Requires API level 26 (Android O) or above.
+/*
+ * Checks if a ZonedDateTime is within a specified number of days from today.
+ * Returns false if the ZonedDateTime is null.
+ * Requires API level 26 (Android O) or above.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun ZonedDateTime?.kompanionIsWithinDaysFromToday(days: Long): Boolean = this?.let {
     val currentTime = ZonedDateTime.now(ZoneId.systemDefault())
     it.isAfter(currentTime.minusDays(days)) && it.kompanionIsBeforeOrEqual(currentTime)
 } ?: false
 
-// Checks if the current ZonedDateTime is before or equal to another ZonedDateTime.
-// Requires API level 26 (Android O) or above.
+/*
+ * Checks if the current ZonedDateTime is before or equal to another ZonedDateTime.
+ * Requires API level 26 (Android O) or above.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun ZonedDateTime.kompanionIsBeforeOrEqual(other: ZonedDateTime): Boolean =
     isBefore(other) || isEqual(other)
 
-// Converts a LocalDateTime object to a human-readable format indicating whether the date is
-// today, yesterday, or provides the name of the day (e.g., "Monday"). It also formats the time
-// in 12-hour format with AM/PM. Requires API level 26 (Android O) or above.
+/*
+ * Converts a LocalDateTime object to a human-readable format indicating whether the date is
+ * today, yesterday, or provides the name of the day (e.g., "Monday").
+ * It also formats the time in 12-hour format with AM/PM.
+ * Requires API level 26 (Android O) or above.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun LocalDateTime.kompanionToReadable(): String {
     val date = LocalDate.now()
@@ -220,9 +102,11 @@ fun LocalDateTime.kompanionToReadable(): String {
     return "$day: $hour:$minute $amPm"
 }
 
-// Returns a readable string representation of the LocalDateTime, showing whether it's
-// today, yesterday, or giving the full date in the format of "DayOfWeek, Month Day, Year".
-// Requires API level 26 (Android O) or above.
+/*
+ * Returns a readable string representation of the LocalDateTime, showing whether it's
+ * today, yesterday, or giving the full date in the format of "DayOfWeek, Month Day, Year".
+ * Requires API level 26 (Android O) or above.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun LocalDateTime.kompanionToReadableWeekDay(): String {
     val today = LocalDate.now()
@@ -234,8 +118,11 @@ fun LocalDateTime.kompanionToReadableWeekDay(): String {
     }
 }
 
-// Converts a LocalDateTime object to a readable time string in 12-hour format
-// with AM/PM (e.g., "10:30 AM"). Requires API level 26 (Android O) or above.
+/*
+ * Converts a LocalDateTime object to a readable time string in 12-hour format
+ * with AM/PM (e.g., "10:30 AM").
+ * Requires API level 26 (Android O) or above.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun LocalDateTime.kompanionToReadableTime(): String {
     val hour = if (this.hour > 12) this.hour - 12 else this.hour

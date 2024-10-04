@@ -17,11 +17,18 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
-// Collects items from a Flow while providing hooks for handling events like onStart, onEach, and onError.
-// - onStart: Invoked before collecting items from the flow.
-// - onEach: Called for each emitted item in the flow.
-// - onError: Invoked when an error is caught during collection.
-// Uses 'distinctUntilChanged' to avoid emitting duplicate consecutive items.
+
+/**
+* Collects items from a Flow while providing hooks for handling events like onStart, onEach, and onError.
+* - onStart: Invoked before collecting items from the flow.
+* - onEach: Called for each emitted item in the flow.
+* - onError: Invoked when an error is caught during collection.
+* Uses 'distinctUntilChanged' to avoid emitting duplicate consecutive items.
+*
+* @param onStart Lambda function invoked before collecting items.
+* @param onEach Lambda function called for each emitted item.
+* @param onError Lambda function invoked when an error is caught during collection.
+*/
 suspend inline fun <T : Any?> Flow<T>.kompanionCollectBy(
     onStart: () -> Unit = {},
     crossinline onEach: (T) -> Unit = { _ -> },
@@ -37,11 +44,18 @@ suspend inline fun <T : Any?> Flow<T>.kompanionCollectBy(
     }
 }
 
-// Collects only the first item from the Flow and wraps it into a single-item flow for further operations.
-// - onStart: Invoked before collecting the first item from the flow.
-// - onItemReceived: Called when the first item is received.
-// - onError: Invoked when an error is caught.
-// Uses 'distinctUntilChanged' to avoid duplicate emissions and handles exceptions gracefully.
+/*
+ * Collects only the first item from the Flow and wraps it into a single-item flow for further operations.
+ * - onStart: Invoked before collecting the first item from the flow.
+ * - onItemReceived: Called when the first item is received.
+ * - onError: Invoked when an error is caught.
+ * Uses 'distinctUntilChanged' to avoid duplicate emissions and handles exceptions gracefully.
+ *
+ * @param onStart Lambda function invoked before collecting the first item.
+ * @param onItemReceived Lambda function called when the first item is received.
+ * @param onError Lambda function invoked when an error is caught.
+ * @return A Flow that emits the first item wrapped in a single-item flow.
+ */
 suspend inline fun <T : Any?> Flow<T>.kompanionSingleFlow(
     onStart: () -> Unit = {},
     crossinline onItemReceived: (T) -> Unit = { _ -> },
@@ -58,12 +72,19 @@ suspend inline fun <T : Any?> Flow<T>.kompanionSingleFlow(
     }
 }
 
-// Collects items from a Flow with a provided CoroutineScope, allowing the 'onEach' handler to be launched within the scope.
-// - onStart: Invoked before the collection starts.
-// - onEach: Suspends and handles each item received, executed within the provided CoroutineScope.
-// - onError: Called when an error occurs.
-// - coroutineScope: Defines the scope in which 'onEach' will be launched.
-// Handles errors and ensures 'onEach' is executed asynchronously within the given scope.
+/**
+ * Collects items from a Flow with a provided CoroutineScope, allowing the 'onEach' handler to be launched within the scope.
+ * - onStart: Invoked before the collection starts.
+ * - onEach: Suspends and handles each item received, executed within the provided CoroutineScope.
+ * - onError: Called when an error occurs.
+ * - coroutineScope: Defines the scope in which 'onEach' will be launched.
+ * Handles errors and ensures 'onEach' is executed asynchronously within the given scope.
+ *
+ * @param onStart Lambda function invoked before the collection starts.
+ * @param onEach Lambda function that handles each item received.
+ * @param onError Lambda function invoked when an error occurs.
+ * @param coroutineScope The CoroutineScope where 'onEach' will be launched.
+ */
 suspend fun <T : Any?> Flow<T>.kompanionCollectByWithScope(
     onStart: () -> Unit = {},
     onEach: suspend (T) -> Unit = { _ -> },
@@ -88,12 +109,19 @@ suspend fun <T : Any?> Flow<T>.kompanionCollectByWithScope(
     }
 }
 
-// Collects the first item from the Flow and processes it within the provided CoroutineScope.
-// - onStart: Invoked before attempting to receive the first item.
-// - onItemReceived: Handles the first item asynchronously within the given scope.
-// - onError: Invoked in case of an error.
-// - coroutineScope: Defines the CoroutineScope where 'onItemReceived' will be executed.
-// Ensures that the first item is handled in an asynchronous manner within the given CoroutineScope.
+/**
+ * Collects the first item from the Flow and processes it within the provided CoroutineScope.
+ * - onStart: Invoked before attempting to receive the first item.
+ * - onItemReceived: Handles the first item asynchronously within the given scope.
+ * - onError: Invoked in case of an error.
+ * - coroutineScope: Defines the CoroutineScope where 'onItemReceived' will be executed.
+ * Ensures that the first item is handled in an asynchronous manner within the given CoroutineScope.
+ *
+ * @param onStart Lambda function invoked before attempting to receive the first item.
+ * @param onItemReceived Lambda function that handles the first item.
+ * @param onError Lambda function invoked in case of an error.
+ * @param coroutineScope The CoroutineScope where 'onItemReceived' will be executed.
+ */
 suspend fun <T : Any?> Flow<T>.kompanionSingleFlowOnItemReceivedInScope(
     onStart: () -> Unit = {},
     onItemReceived: suspend (T) -> Unit = { _ -> },
@@ -116,11 +144,17 @@ suspend fun <T : Any?> Flow<T>.kompanionSingleFlowOnItemReceivedInScope(
     }
 }
 
-// Collects items from a Flow and performs the given action (block) within the lifecycle of the provided AppCompatActivity.
-// - activity: The AppCompatActivity whose lifecycle scope is used for launching the collection.
-// - context: Optional CoroutineContext to run the flow on a specific dispatcher.
-// - block: The action to perform for each item collected from the flow.
-// Uses 'flowOn' to switch the context and 'launchIn' to collect within the lifecycle scope.
+/**
+ * Collects items from a Flow and performs the given action (block) within the lifecycle of the provided AppCompatActivity.
+ * - activity: The AppCompatActivity whose lifecycle scope is used for launching the collection.
+ * - context: Optional CoroutineContext to run the flow on a specific dispatcher.
+ * - block: The action to perform for each item collected from the flow.
+ * Uses 'flowOn' to switch the context and 'launchIn' to collect within the lifecycle scope.
+ *
+ * @param activity The AppCompatActivity whose lifecycle scope is used.
+ * @param context Optional CoroutineContext to run the flow on a specific dispatcher.
+ * @param block Lambda function to perform for each item collected from the flow.
+ */
 fun <T> Flow<T>.kompanionCollectAsEffect(
     activity: AppCompatActivity,
     context: CoroutineContext = EmptyCoroutineContext,
@@ -131,11 +165,17 @@ fun <T> Flow<T>.kompanionCollectAsEffect(
     }
 }
 
-// Converts a List into a Flow that emits the entire list as a single item.
-// The flow ensures that the same list is not emitted twice consecutively by using 'distinctUntilChanged'.
+/**
+ * Converts a List into a Flow that emits the entire list as a single item.
+ * The flow ensures that the same list is not emitted twice consecutively by using 'distinctUntilChanged'.
+ *
+ * @return A Flow that emits the entire list as a single item.
+ */
 fun <T> List<T>.kompanionAsFlow(): Flow<List<T>> =
     flow { emit(this@kompanionAsFlow) }
         .distinctUntilChanged()
+
+
 
 /**
  * Processes a list in batches using Kotlin Flow.

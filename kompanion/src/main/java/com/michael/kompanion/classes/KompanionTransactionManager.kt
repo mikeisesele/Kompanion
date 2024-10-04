@@ -5,23 +5,29 @@ package com.michael.kompanion.classes
  * Add operations to execute and handles them in a transactional way.
  * Manages a transactional operation with rollback support.
  *
+ *
+ * ```Kt
+ *
  * val transactionManager = TransactionManager<String>()
  *
  * transactionManager.add(
  *     action = { "Task 1" },
  *     rollback = { println("Rollback Task 1: $it") }
  * )
+ *
  * transactionManager.add(
  *     action = { "Task 2" },
  *     rollback = { println("Rollback Task 2: $it") }
  * )
  *
  * // Attempt to commit the tasks
- *     try {
- *         transactionManager.commit()
- *     } catch (e: Exception) {
- *         println("Transaction failed: ${e.message}")
- *     }
+ * try {
+ *    transactionManager.commit()
+ * } catch (e: Exception) {
+ *    println("Transaction failed: ${e.message}")
+ * }
+ *
+ * ```
  *
  */
 class KompanionTransactionManager<T> {

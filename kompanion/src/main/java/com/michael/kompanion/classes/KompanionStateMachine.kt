@@ -3,6 +3,7 @@ package com.michael.kompanion.classes
 /**
  * Simple state machine for controlled state transitions.
  *
+ * ```Kt
  *
  * enum class State { Idle, Active, Completed }
  * enum class Event { Start, Finish }
@@ -16,16 +17,18 @@ package com.michael.kompanion.classes
  * )
  *
  * println(stateMachine.currentState) // Idle
+ *
  * stateMachine.transition(Event.Start)
+ *
  * println(stateMachine.currentState) // Active
  *
+ *```
  */
 class KompanionStateMachine<S, E>(
     initialState: S,
     private val transitionRules: Map<S, Map<E, S>>
 ) {
-    var currentState: S = initialState
-        private set
+    private var currentState: S = initialState
 
     fun transition(event: E): Boolean {
         val nextState = transitionRules[currentState]?.get(event)

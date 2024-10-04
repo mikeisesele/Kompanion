@@ -11,6 +11,16 @@ import java.io.File
 
 const val MIME_PDF = "application/pdf"
 
+
+/**
+ * Downloads a file from the specified URL and saves it to the designated directory.
+ *
+ * @param fileName The name of the file to be saved.
+ * @param desc A description for the download notification.
+ * @param url The URL of the file to download.
+ * @param destinationDir The directory where the file will be saved. Default is the Downloads directory.
+ * @return The download ID for the queued download.
+ */
 fun Context.kompanionDownloadFile(
     fileName: String,
     desc: String,
@@ -30,14 +40,12 @@ fun Context.kompanionDownloadFile(
 }
 
 /**
- * If Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q we receive a uri of the content:// scheme hence
- * we don't need to use [FileProvider] to get a proper [Uri].
- * Otherwise we get a file:// scheme which needs a [FileProvider] to parse it into a correct [Uri]
- * The proper type of [Uri] is needed in order to launch the pdf reader app on the phone.
- * Due to Android changes in how different schemes interact with apps storage we need the proper
- * conversion in order to share our apps data (the downloaded file) with external apps such as a pdf
- * reader. By migrating to a content:// scheme (as file is no longer supported), we don't need to request
- * additional read permission as a temporary read permission is added as part of the content:// uri
+ * Converts a file URI into a content URI, handling the differences between Android versions.
+ * If Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q, a content:// URI is returned directly.
+ * Otherwise, a file:// URI is converted into a content URI using FileProvider.
+ *
+ * @param uri The URI of the file to convert.
+ * @return The content URI for the file.
  */
 fun Context.kompanionGetFileUri(uri: String): Uri {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -47,6 +55,14 @@ fun Context.kompanionGetFileUri(uri: String): Uri {
     }
 }
 
+/**
+ * Opens a file using an Intent, specifying the MIME type if provided.
+ * Handles any errors by executing the onErrorAction lambda.
+ *
+ * @param uri The URI of the file to open.
+ * @param mimeDataType The MIME type of the file (optional).
+ * @param onErrorAction Action to perform if an error occurs when trying to open the file.
+ */
 fun Context.kompanionOpenFile(
     uri: String,
     mimeDataType: String? = null,
@@ -63,7 +79,7 @@ fun Context.kompanionOpenFile(
         }
         addFlags(
             Intent.FLAG_ACTIVITY_NEW_TASK
-                or Intent.FLAG_GRANT_READ_URI_PERMISSION,
+                    or Intent.FLAG_GRANT_READ_URI_PERMISSION,
         )
         try {
             startActivity(this)
