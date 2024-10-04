@@ -7,6 +7,15 @@ import java.io.ObjectOutputStream
 
 
 /**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+
+/**
  * Reverses the elements of a list in place.
  */
 fun <T> MutableList<T>.kompanionReverse() {

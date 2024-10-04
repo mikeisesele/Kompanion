@@ -3,6 +3,14 @@ package com.michael.kompanion.extensions
 import kotlin.math.pow
 
 /**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+/**
  * Generates a random from the integer to 1000000000
  */
 fun Int.kompanionRandomFrom(): Int {

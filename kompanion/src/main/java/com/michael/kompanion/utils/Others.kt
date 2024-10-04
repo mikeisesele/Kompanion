@@ -12,6 +12,14 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 
+/**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
 
 /**
  * Safely executes an operation by wrapping it in a try-catch block. Operations to be invoked

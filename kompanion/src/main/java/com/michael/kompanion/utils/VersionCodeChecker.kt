@@ -3,6 +3,15 @@ package com.michael.kompanion.utils
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
 
+/**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+
 object KompanionSDKVersionChecker {
 
     /**

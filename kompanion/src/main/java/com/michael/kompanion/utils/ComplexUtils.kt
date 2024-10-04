@@ -7,6 +7,15 @@ import kotlin.reflect.full.primaryConstructor
 
 
 /**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+
+/**
  * Deep equals for data classes using reflection.
  *
  * ```Kt

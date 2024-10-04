@@ -15,6 +15,16 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+
+/**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+
 /*
  * Converts a date string in the format "yyyy-MM-dd HH:mm:ss" to a more readable format "dd MMMM yyyy".
  * Requires API level 26 (Android O) or above as it uses LocalDateTime and DateTimeFormatter.

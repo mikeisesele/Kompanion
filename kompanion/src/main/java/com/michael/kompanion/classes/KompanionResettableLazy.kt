@@ -1,6 +1,14 @@
 package com.michael.kompanion.classes
 
 /**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+/**
  * A lazy value that can be reset.
  */
 class KompanionResettableLazy<T>(private val initializer: () -> T) {

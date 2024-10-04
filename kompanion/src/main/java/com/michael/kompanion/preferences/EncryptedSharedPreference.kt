@@ -8,6 +8,13 @@ import com.michael.kompanion.preferences.security.RigelAdvancedEncryption
 import com.michael.kompanion.preferences.security.RigelPasswordBasedKeyDerivationFunction
 import com.michael.kompanion.preferences.security.enums.EncryptionType
 
+/**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
 
 /**
  * Encrypts and stores a string value in SharedPreferences using the specified encryption type.

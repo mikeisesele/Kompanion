@@ -5,6 +5,16 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.round
 import kotlin.random.Random
 
+
+/**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+
 /**
 * Checks if all the provided objects are not null.
 *

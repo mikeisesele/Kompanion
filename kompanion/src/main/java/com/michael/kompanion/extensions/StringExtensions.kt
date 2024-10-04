@@ -2,6 +2,16 @@ package com.michael.kompanion.extensions
 
 import java.util.Locale
 
+
+/**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+
 /**
  * Simple utility that converts a string into title case.
  * This is mainly due to [String.capitalize] being deprecated.

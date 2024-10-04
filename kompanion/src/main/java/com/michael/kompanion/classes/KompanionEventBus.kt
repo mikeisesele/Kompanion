@@ -1,5 +1,12 @@
 package com.michael.kompanion.classes
 
+/**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
 
 /**
  * Event bus for broadcasting and listening to events within the same process.

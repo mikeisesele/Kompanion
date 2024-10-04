@@ -2,6 +2,16 @@ package com.michael.kompanion.classes
 
 
 /**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+
+
+/**
  * Add operations to execute and handles them in a transactional way.
  * Manages a transactional operation with rollback support.
  *

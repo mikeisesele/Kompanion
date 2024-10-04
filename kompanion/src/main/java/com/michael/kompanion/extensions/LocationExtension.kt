@@ -4,6 +4,16 @@ import android.location.Location
 import kotlin.random.Random
 import kotlin.math.*
 
+
+/**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+
 /*
  * Generates a URL for google maps to show a location.
  */

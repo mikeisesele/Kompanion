@@ -5,6 +5,14 @@ import androidx.core.content.edit
 
 
 /**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+/**
  * Provides a convenient way to edit SharedPreferences using a lambda function on the SharedPreferences.Editor.
  * The operation block is executed within the context of the SharedPreferences.Editor.
  *

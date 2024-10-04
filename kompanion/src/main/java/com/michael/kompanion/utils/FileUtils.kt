@@ -11,6 +11,13 @@ import java.io.File
 
 const val MIME_PDF = "application/pdf"
 
+/**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
 
 /**
  * Downloads a file from the specified URL and saves it to the designated directory.

@@ -1,6 +1,15 @@
 package com.michael.kompanion.classes
 
 /**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+
+/**
  * Immutable list with change tracking.
  *
  * ```Kt

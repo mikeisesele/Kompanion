@@ -18,6 +18,16 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
+
+/**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
+
 /**
 * Collects items from a Flow while providing hooks for handling events like onStart, onEach, and onError.
 * - onStart: Invoked before collecting items from the flow.

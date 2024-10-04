@@ -10,6 +10,15 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.Serializable
 
+
+/**
+ * Author: Michael Isesele
+ * Year: 2024
+ * LinkedIn: [https://www.linkedin.com/in/michael-isesele/]
+ * GitHub: [https://github.com/mikeisesele]
+ *
+ */
+
 /**
  * @param flags Optional flags to be added to the Intent
  * @param extras Optional extras to be added to the Intent.
