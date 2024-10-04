@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("maven-publish")
-    id("org.jetbrains.dokka") version "1.9.20"
+    id("org.jetbrains.dokka")
 }
 
 
@@ -81,21 +81,21 @@ tasks.dokkaHtml.configure {
     outputDirectory.set(buildDir.resolve("dokka"))
 }
 
-
-publishing {
-    publications {
-        create<MavenPublication>("release") {
-            groupId = "com.mikeisesele"
-            artifactId = "kompanion"
-            version = "1.4.0"
-            artifact(tasks["androidKDocJar"])
-
-            afterEvaluate {
-                from(components["release"])
-            }
-        }
-    }
-}
+//
+//publishing {
+//    publications {
+//        create<MavenPublication>("release") {
+//            groupId = "com.mikeisesele"
+//            artifactId = "kompanion"
+//            version = "1.4.0"
+//            artifact(tasks["androidKDocJar"])
+//
+//            afterEvaluate {
+//                from(components["release"])
+//            }
+//        }
+//    }
+//}
 
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -110,6 +110,19 @@ dependencies {
     // Is applied universally
     dokkaPlugin("org.jetbrains.dokka:mathjax-plugin:1.9.20")
 
-    // Is applied for the single-module dokkaHtml task only
-    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.9.20")
+//    // Is applied for the single-module dokkaHtml task only
+//    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.9.20")
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = "com.mikeisesele"
+                artifactId = "kompanion"
+                version = "1.4.0"
+            }
+        }
+    }
 }
