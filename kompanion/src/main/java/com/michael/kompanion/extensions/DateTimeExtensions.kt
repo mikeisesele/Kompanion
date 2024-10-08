@@ -530,3 +530,190 @@ fun kompanionParseZonedDateTime(dateString: String, format: String): ZonedDateTi
         null // or handle the exception as needed
     }
 }
+
+
+// Enum class for different date patterns
+enum class DatePattern(val pattern: String) {
+    /**
+     * Format: dd/MM/yyyy
+     * Example Output: 08/10/2024
+     */
+    DD_MM_YYYY("dd/MM/yyyy"),
+
+    /**
+     * Format: dd-MM-yyyy
+     * Example Output: 08-10-2024
+     */
+    DD_DASH_MM_DASH_YYYY("dd-MM-yyyy"),
+
+    /**
+     * Format: MM/dd/yyyy
+     * Example Output: 10/08/2024
+     */
+    MM_DD_YYYY("MM/dd/yyyy"),
+
+    /**
+     * Format: yyyy/MM/dd
+     * Example Output: 2024/10/08
+     */
+    YYYY_MM_DD("yyyy/MM/dd"),
+
+    /**
+     * Format: dd MMMM yyyy
+     * Example Output: 08 October 2024
+     */
+    DD_MMMM_YYYY("dd MMMM yyyy"),
+
+    /**
+     * Format: MMMM dd, yyyy
+     * Example Output: October 08, 2024
+     */
+    MMMM_DD_YYYY("MMMM dd, yyyy"),
+
+    /**
+     * Format: yyyy/MM/dd HH:mm
+     * Example Output: 2024/10/08 15:30
+     */
+    YYYY_MM_DD_HH_MM("yyyy/MM/dd HH:mm"),
+
+    /**
+     * Format: dd MMM yyyy
+     * Example Output: 08 Oct 2024
+     */
+    DD_MMM_YYYY("dd MMM yyyy"),
+
+    /**
+     * Format: hh:mm a, dd/MM/yyyy
+     * Example Output: 03:30 PM, 08/10/2024
+     */
+    HH_MM_AAAA("hh:mm a, dd/MM/yyyy"),
+
+    /**
+     * Format: dd/MM/yy
+     * Example Output: 08/10/24
+     */
+    DD_MM_YY("dd/MM/yy"),
+
+    /**
+     * Format: yyyy-MM-dd
+     * Example Output: 2024-10-08
+     */
+    ISO_LOCAL_DATE("yyyy-MM-dd"),
+
+    /**
+     * Format: yyyy-MM-dd'T'HH:mm:ss
+     * Example Output: 2024-10-08T15:30:00
+     */
+    ISO_LOCAL_DATE_TIME("yyyy-MM-dd'T'HH:mm:ss"),
+
+    /**
+     * Format: EEE, dd MMM yyyy HH:mm:ss z
+     * Example Output: Tue, 08 Oct 2024 15:30:00 UTC
+     */
+    RFC_1123_DATE_TIME("EEE, dd MMM yyyy HH:mm:ss z"),
+
+    /**
+     * Format: dd/MM/yyyy HH:mm
+     * Example Output: 08/10/2024 15:30
+     */
+    DD_MM_YYYY_HH_MM("dd/MM/yyyy HH:mm"),
+
+    /**
+     * Format: MM/dd/yyyy HH:mm
+     * Example Output: 10/08/2024 15:30
+     */
+    MM_DD_YYYY_HH_MM("MM/dd/yyyy HH:mm"),
+
+    /**
+     * Format: dd 'of' MMMM, yyyy
+     * Example Output: 08 of October, 2024
+     */
+    DD_MONTH_YYYY("dd 'of' MMMM, yyyy"),
+
+    /**
+     * Format: MMMM dd, yyyy
+     * Example Output: October 08, 2024
+     */
+    MONTH_DAY_YEAR("MMMM dd, yyyy"),
+
+    /**
+     * Format: dd MMMM
+     * Example Output: 08 October
+     */
+    DD_MMMM("dd MMMM"),
+
+    /**
+     * Format: HH:mm
+     * Example Output: 15:30
+     */
+    HH_MM("HH:mm"),
+
+    /**
+     * Format: hh:mm a
+     * Example Output: 03:30 PM
+     */
+    HH_MM_AAA("hh:mm a"),
+
+    /**
+     * Format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+     * Example Output: 2024-10-08T15:30:00.000Z
+     */
+    ISO_INSTANT("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+
+    /**
+     * Format: EEEE, dd MMMM yyyy
+     * Example Output: Tuesday, 08 October 2024
+     */
+    FULL_DATE("EEEE, dd MMMM yyyy"),
+
+    /**
+     * Format: M/d/yy
+     * Example Output: 10/8/24
+     */
+    SHORT_DATE("M/d/yy"),
+
+    /**
+     * Format: MMMM dd, yyyy
+     * Example Output: October 08, 2024
+     */
+    LONG_DATE("MMMM dd, yyyy"),
+
+    /**
+     * Format: yyyy-MM-dd HH:mm:ss
+     * Example Output: 2024-10-08 15:30:00
+     */
+    TIMESTAMP("yyyy-MM-dd HH:mm:ss"),
+
+    /**
+     * Format: dd.MM.yyyy HH:mm:ss
+     * Example Output: 08.10.2024 15:30:00
+     */
+    CUSTOM_FORMAT("dd.MM.yyyy HH:mm:ss")
+}
+
+
+/**
+ * Formats a LocalDateTime to a String based on the specified date pattern.
+ * @param datePattern The date pattern to use for formatting, defined in the DatePattern enum.
+ * @return A formatted string representing the date, or a relative time description if the date is within the last day.
+ */
+@RequiresApi(Build.VERSION_CODES.O)
+fun LocalDateTime.kompanionFormatForDisplay(datePattern: DatePattern): String {
+    val now = LocalDateTime.now()
+    val daysDifference = ChronoUnit.DAYS.between(this, now)
+
+    return if (daysDifference >= 1) {
+        // Use the selected pattern for formatting
+        val formatter = DateTimeFormatter.ofPattern(datePattern.pattern)
+        this.format(formatter)
+    } else {
+        // Format as hours
+        val hoursDifference = ChronoUnit.HOURS.between(this, now)
+        if (hoursDifference >= 1) {
+            "$hoursDifference hour${if (hoursDifference > 1) "s" else ""} ago"
+        } else {
+            "Just now" // If it's less than an hour
+        }
+    }
+}
+

@@ -181,6 +181,30 @@ fun <T> ((T) -> Unit).kompanionFunctionDebounce(waitMs: Long): (T) -> Unit {
 }
 
 /**
+ * Debounces a click event handler, preventing it from being called too frequently.
+ *
+ * This is useful to avoid multiple consecutive click events within a short time period.
+ *
+ * ```Kt
+ * val debouncedClick = { onClick }.debounceClick(500L)
+ * ```
+ * @param waitMs The minimum wait time between consecutive clicks.
+ * @return A debounced version of the click handler.
+ */
+fun (() -> Unit).kompanionDebounce(waitMs: Long): () -> Unit {
+    var lastInvocation = 0L
+    return {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastInvocation >= waitMs) {
+            lastInvocation = currentTime
+            this()
+        }
+    }
+}
+
+
+
+/**
  * Rate limits a function to only allow execution every `intervalMs` milliseconds.
  *
  * ```Kt

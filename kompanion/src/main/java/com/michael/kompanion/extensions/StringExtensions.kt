@@ -91,3 +91,7 @@ fun String.kompanionCountVowels(): Int = count { it.lowercaseChar() in "aeiou" }
 fun emptyString() = ""
 
 fun String.kompanionNullifyEmpty() = this.ifBlank { null }
+
+fun String?.kompanionUnknownError() = this ?: "Unknown Error"
+
+fun String?.kompanionEmptyOrUnknownError() = this.orEmpty().ifBlank { "Unknown Error" }
