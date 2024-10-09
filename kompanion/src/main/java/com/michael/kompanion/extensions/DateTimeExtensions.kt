@@ -738,8 +738,8 @@ fun LocalDateTime.kompanionRandomTimeWithinDays(days: Int, direction: TimeDirect
                 // Calculate the target date in the future
                 val targetDate = this.plusDays(days.toLong())
                 // Generate random hour and minute
-                val randomHour = 24.kompanionRandom() // 0 to 23 inclusive
-                val randomMinute = 60.kompanionRandom() // 0 to 59 inclusive
+                val randomHour = 24.kompanionRandom(0) // 0 to 23 inclusive
+                val randomMinute = 60.kompanionRandom(0) // 0 to 59 inclusive
                 targetDate.withHour(randomHour).withMinute(randomMinute).withSecond(0).withNano(0)
             }
 
@@ -747,8 +747,8 @@ fun LocalDateTime.kompanionRandomTimeWithinDays(days: Int, direction: TimeDirect
                 // Calculate the target date in the past
                 val targetDate = this.minusDays(days.toLong())
                 // Generate random hour and minute
-                val randomHour = 24.kompanionRandom() // 0 to 23 inclusive
-                val randomMinute = 60.kompanionRandom() // 0 to 59 inclusive
+                val randomHour = 24.kompanionRandom(0) // 0 to 23 inclusive
+                val randomMinute = 60.kompanionRandom(0) // 0 to 59 inclusive
                 targetDate.withHour(randomHour).withMinute(randomMinute).withSecond(0).withNano(0)
             }
         }
@@ -783,7 +783,7 @@ fun LocalDateTime.kompanionRandomDayWithin(days: Int, direction: TimeDirection):
         val daysBetween = ChronoUnit.DAYS.between(startingDate, targetDate).toInt()
 
         // Generate a random day offset within the range
-        val randomDayOffset = (daysBetween + 1).kompanionRandom()
+        val randomDayOffset = (daysBetween + 1).kompanionRandom(0)
 
         // Return a random date within the specified range
         startingDate.plusDays(randomDayOffset.toLong()).withHour(0).withMinute(0).withSecond(0).withNano(0)
