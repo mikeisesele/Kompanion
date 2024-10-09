@@ -36,7 +36,13 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    sourceSets {
+        getByName("main").java.srcDirs("src/main/kotlin")
+        getByName("test").java.srcDirs("src/test/kotlin")
+    }
 }
+
 
 tasks.withType<Jar> {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Exclude duplicates
