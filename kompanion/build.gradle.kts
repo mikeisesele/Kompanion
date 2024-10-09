@@ -42,10 +42,6 @@ tasks.withType<Jar> {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Exclude duplicates
 }
 
-tasks.dokkaHtml {
-    outputDirectory.set(file("../kompanionDocumentation/html"))
-}
-
 tasks.register("cleanDokkaModuleDocs") {
     doLast {
         delete(file("../kompanionDocumentation/html"))
@@ -109,9 +105,7 @@ dependencies {
 
     // Is applied universally
     dokkaPlugin("org.jetbrains.dokka:mathjax-plugin:1.9.20")
-
-//    // Is applied for the single-module dokkaHtml task only
-//    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:1.9.20")
+    dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:1.9.20")
 }
 
 afterEvaluate {

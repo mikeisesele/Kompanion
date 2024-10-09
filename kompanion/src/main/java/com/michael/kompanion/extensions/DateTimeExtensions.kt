@@ -717,3 +717,77 @@ fun LocalDateTime.kompanionFormatForDisplay(datePattern: DatePattern): String {
     }
 }
 
+// Enum class for time direction
+enum class TimeDirection {
+    FUTURE,
+    PAST
+}
+
+/**
+ * Generates a random LocalDateTime within the specified number of days in the past or future.
+ * @param days The number of days for generating a random time.
+ * @param direction Specifies whether to generate the time in the future or the past.
+ * @return A random LocalDateTime on the specified day.
+ */
+@RequiresApi(Build.VERSION_CODES.O)
+fun LocalDateTime.kompanionRandomTimeWithinDays(days: Int, direction: TimeDirection): LocalDateTime {
+
+    return if  (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        return when (direction) {
+            TimeDirection.FUTURE -> {
+                // Calculate the target date in the future
+                val targetDate = this.plusDays(days.toLong())
+                // Generate random hour and minute
+                val randomHour = 24.kompanionRandom() // 0 to 23 inclusive
+                val randomMinute = 60.kompanionRandom() // 0 to 59 inclusive
+                targetDate.withHour(randomHour).withMinute(randomMinute).withSecond(0).withNano(0)
+            }
+
+            TimeDirection.PAST -> {
+                // Calculate the target date in the past
+                val targetDate = this.minusDays(days.toLong())
+                // Generate random hour and minute
+                val randomHour = 24.kompanionRandom() // 0 to 23 inclusive
+                val randomMinute = 60.kompanionRandom() // 0 to 59 inclusive
+                targetDate.withHour(randomHour).withMinute(randomMinute).withSecond(0).withNano(0)
+            }
+        }
+    } else {
+        LocalDateTime.now()
+    }
+}
+
+
+/**
+ * Generates a random LocalDateTime within a specified number of days.
+ * @param days The number of days for generating a random date.
+ * @param direction Specifies whether to generate the date in the future or the past.
+ * @return A random LocalDateTime on a day within the specified range.
+ */
+@RequiresApi(Build.VERSION_CODES.O)
+fun LocalDateTime.kompanionRandomDayWithin(days: Int, direction: TimeDirection): LocalDateTime {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // Calculate the range of dates
+        val targetDate = when (direction) {
+            TimeDirection.FUTURE -> this.plusDays(days.toLong())
+            TimeDirection.PAST -> this.minusDays(days.toLong())
+        }
+
+        // Get the starting date based on the direction
+        val startingDate = when (direction) {
+            TimeDirection.FUTURE -> this // Today for future
+            TimeDirection.PAST -> targetDate // The past target date
+        }
+
+        // Calculate the number of days between the two dates
+        val daysBetween = ChronoUnit.DAYS.between(startingDate, targetDate).toInt()
+
+        // Generate a random day offset within the range
+        val randomDayOffset = (daysBetween + 1).kompanionRandom()
+
+        // Return a random date within the specified range
+        startingDate.plusDays(randomDayOffset.toLong()).withHour(0).withMinute(0).withSecond(0).withNano(0)
+    } else {
+        LocalDateTime.now() // Fallback for devices below API level 26
+    }
+}

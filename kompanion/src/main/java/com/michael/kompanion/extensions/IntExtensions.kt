@@ -27,11 +27,12 @@ fun Int.kompanionIsEven(): Boolean = this % 2 == 0
  */
 fun Int.kompanionIsOdd(): Boolean = this % 2 != 0
 
-
-fun Int.kompanionRandom(): Int {
-    return (1..this).random()
+/**
+ * generates a random number.
+ */
+fun Int.kompanionRandom(start: Int = 1): Int {
+    return (start..this).random()
 }
-
 /**
  * Checks if a number is prime.
  */
