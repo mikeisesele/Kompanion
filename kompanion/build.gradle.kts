@@ -104,8 +104,9 @@ dependencies {
     implementation(libs.kotlin.reflect)
 
     // Is applied universally
-    dokkaPlugin("org.jetbrains.dokka:mathjax-plugin:1.9.20")
+//    dokkaPlugin("org.jetbrains.dokka:mathjax-plugin:1.9.20")
     dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:1.9.20")
+
 }
 
 afterEvaluate {
