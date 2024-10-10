@@ -15,12 +15,18 @@ import kotlin.random.Random
  */
 
 
+
 /**
-* Checks if all the provided objects are not null.
-*
-* @param objects List of objects to check.
-* @return `true` if all objects are not null, `false` otherwise.
-*/
+ * Checks if all the provided objects are not null.
+ *
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val areAllNotNull = kompanionAllNotNull("Hello", 123, true)
+ * println(areAllNotNull) // true
+ * ```
+ */
 fun <T> kompanionAllNotNull(vararg objects: T?): Boolean {
     return objects.all { it != null }
 }
@@ -28,8 +34,13 @@ fun <T> kompanionAllNotNull(vararg objects: T?): Boolean {
 /**
  * Checks if any of the provided objects is null.
  *
- * @param objects List of objects to check.
- * @return `true` if any object is null, `false` otherwise.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val anyNull = kompanionAnyIsNull("Hello", null, true)
+ * println(anyNull) // true
+ * ```
  */
 fun <T> kompanionAnyIsNull(vararg objects: T?): Boolean {
     return objects.any { it == null }
@@ -37,9 +48,16 @@ fun <T> kompanionAnyIsNull(vararg objects: T?): Boolean {
 
 /**
  * Clears all elements in the provided arrays.
- * Note: This function expects the objects to be ArrayLists.
+ * Example usage:
  *
- * @param objects List of ArrayLists to clear.
+ * ```Kt
+ *
+ * val list1 = arrayListOf(1, 2, 3)
+ * val list2 = arrayListOf("A", "B", "C")
+ * kompanionClearAllArray(list1, list2)
+ * println(list1) // []
+ * println(list2) // []
+ * ```
  */
 fun <T> kompanionClearAllArray(vararg objects: T?) {
     objects.forEach { (it as ArrayList<*>).clear() }
@@ -47,9 +65,14 @@ fun <T> kompanionClearAllArray(vararg objects: T?) {
 
 /**
  * Extension function to set a default value if the object is null.
+ * Example usage:
  *
- * @param defaultValue A lambda function providing the default value.
- * @return The original object if not null, otherwise the result of defaultValue().
+ * ```Kt
+ *
+ * val name: String? = null
+ * val result = name.kompanionIfNullSetDefault { "Default Name" }
+ * println(result) // "Default Name"
+ * ```
  */
 inline fun <T> T?.kompanionIfNullSetDefault(defaultValue: () -> T): T {
     return this ?: defaultValue()
@@ -57,31 +80,65 @@ inline fun <T> T?.kompanionIfNullSetDefault(defaultValue: () -> T): T {
 
 /**
  * Extension function to perform an operation if the object is null.
+ * Example usage:
  *
- * @param operation A lambda function representing the operation to perform if the object is null.
+ * ```Kt
+ *
+ * val nullableValue: Int? = null
+ * nullableValue.kompanionIfNullPerform { println("Value is null!") } // Value is null!
+ * ```
  */
 inline fun <T> T?.kompanionIfNullPerform(operation: () -> Unit) {
     this ?: operation()
 }
 
-
 /**
  * Generates a random integer within the specified range.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val randomInt = kompanionRandomInt(1, 10)
+ * println(randomInt) // A random number between 1 and 10 (e.g., 7)
+ * ```
  */
 fun kompanionRandomInt(min: Int, max: Int): Int = (min..max).random()
 
 /**
  * Creates a shallow copy of the set.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val originalSet = setOf(1, 2, 3)
+ * val copySet = originalSet.kompanionShallowCopy()
+ * println(copySet) // [1, 2, 3]
+ * ```
  */
 fun <T> Set<T>.kompanionShallowCopy(): Set<T> = HashSet(this)
 
 /**
  * Creates a shallow copy of the map.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val originalMap = mapOf(1 to "One", 2 to "Two")
+ * val copyMap = originalMap.kompanionShallowCopy()
+ * println(copyMap) // {1=One, 2=Two}
+ * ```
  */
 fun <K, V> Map<K, V>.kompanionShallowCopy(): Map<K, V> = HashMap(this)
 
 /**
  * Calculates the factorial of a non-negative integer.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val factorial = kompanionFactorial(5)
+ * println(factorial) // 120
+ * ```
  */
 fun kompanionFactorial(n: Int): Long {
     require(n >= 0) { "Factorial is defined only for non-negative integers." }
@@ -94,6 +151,14 @@ fun kompanionFactorial(n: Int): Long {
 
 /**
  * Retrieves the value for the given key or returns the default value if the key doesn't exist or the value is null.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val map = mapOf(1 to "One", 2 to null)
+ * val value = map.kompanionGetOrDefault(2) { "Default Value" }
+ * println(value) // "Default Value"
+ * ```
  */
 inline fun <K, V> Map<K, V?>.kompanionGetOrDefault(key: K, defaultValue: () -> V): V {
     return this[key] ?: defaultValue()
@@ -101,6 +166,13 @@ inline fun <K, V> Map<K, V?>.kompanionGetOrDefault(key: K, defaultValue: () -> V
 
 /**
  * Executes the block if all provided arguments are not null.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val result = kompanionRunIfNotNull("Hello", 123) { str, num -> "$str $num" }
+ * println(result) // "Hello 123"
+ * ```
  */
 inline fun <T1, T2, R> kompanionRunIfNotNull(arg1: T1?, arg2: T2?, block: (T1, T2) -> R): R? {
     return if (arg1 != null && arg2 != null) block(arg1, arg2) else null
@@ -108,6 +180,13 @@ inline fun <T1, T2, R> kompanionRunIfNotNull(arg1: T1?, arg2: T2?, block: (T1, T
 
 /**
  * Runs the block if all provided values are non-null.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val result = kompanionIfAllNotNull("Hello", 123, true) { str, num, bool -> "$str $num $bool" }
+ * println(result) // "Hello 123 true"
+ * ```
  */
 inline fun <T1, T2, T3, R> kompanionIfAllNotNull(arg1: T1?, arg2: T2?, arg3: T3?, block: (T1, T2, T3) -> R): R? {
     return if (arg1 != null && arg2 != null && arg3 != null) block(arg1, arg2, arg3) else null
@@ -115,6 +194,14 @@ inline fun <T1, T2, T3, R> kompanionIfAllNotNull(arg1: T1?, arg2: T2?, arg3: T3?
 
 /**
  * Swaps two elements in a mutable list.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val list = mutableListOf(1, 2, 3)
+ * list.kompanionSwap(0, 2)
+ * println(list) // [3, 2, 1]
+ * ```
  */
 fun <T> MutableList<T>.kompanionSwap(index1: Int, index2: Int) {
     val tmp = this[index1]
@@ -124,6 +211,14 @@ fun <T> MutableList<T>.kompanionSwap(index1: Int, index2: Int) {
 
 /**
  * Safely casts the object to the given type or returns the default value.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val obj: Any = "Hello"
+ * val result = obj.kompanionCastOrDefault { "Default" }
+ * println(result) // "Hello"
+ * ```
  */
 inline fun <reified T> Any?.kompanionCastOrDefault(defaultValue: () -> T): T {
     return this as? T ?: defaultValue()
@@ -131,14 +226,29 @@ inline fun <reified T> Any?.kompanionCastOrDefault(defaultValue: () -> T): T {
 
 /**
  * Initializes the value if it's null.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val name: String? = null
+ * val result = name.kompanionInitializeIfNull { "Default Name" }
+ * println(result) // "Default Name"
+ * ```
  */
 inline fun <T> T?.kompanionInitializeIfNull(initializer: () -> T): T {
     return this ?: initializer()
 }
 
-
 /**
  * Checks if all strings in the collection are non-null and non-empty.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val strings = listOf("A", "B", "")
+ * val allNotEmpty = strings.kompanionAllNotEmpty()
+ * println(allNotEmpty) // false
+ * ```
  */
 fun Collection<String?>.kompanionAllNotEmpty(): Boolean {
     return this.all { !it.isNullOrEmpty() }
@@ -146,6 +256,15 @@ fun Collection<String?>.kompanionAllNotEmpty(): Boolean {
 
 /**
  * Runs an action for each non-null element in a collection.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val list = listOf(1, null, 2)
+ * list.kompanionForEachNotNull { println(it) }
+ * // 1
+ * // 2
+ * ```
  */
 inline fun <T> Collection<T?>.kompanionForEachNotNull(action: (T) -> Unit) {
     for (element in this) {
@@ -153,14 +272,27 @@ inline fun <T> Collection<T?>.kompanionForEachNotNull(action: (T) -> Unit) {
     }
 }
 
-
 /**
  * Checks if a string is a palindrome.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val isPalindrome = kompanionIsPalindrome("madam")
+ * println(isPalindrome) // true
+ * ```
  */
 fun kompanionIsPalindrome(str: String): Boolean = str == str.reversed()
 
-/*
- * generate a random float number within a given range
+/**
+ * Generates a random float number within a given range.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val randomFloat = kompanionFloatRandom(1.0f, 10.0f)
+ * println(randomFloat) // e.g., 7.5
+ * ```
  */
 fun kompanionFloatRandom(min: Float, max: Float): Float {
     val randomValue = Random.nextFloat() * (max - min) + min
@@ -169,8 +301,16 @@ fun kompanionFloatRandom(min: Float, max: Float): Float {
 
 /**
  * Retries the given block up to [times] if it throws an exception.
- * @param times The number of times to retry.
- * @param block The block of code to retry.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val result = kompanionRetry(3) {
+ *     if (Random.nextBoolean()) throw Exception("Error")
+ *     "Success"
+ * }
+ * println(result) // "Success" (after retries if necessary)
+ * ```
  */
 inline fun <T> kompanionRetry(times: Int, block: () -> T): T? {
     var currentAttempt = 0
@@ -186,6 +326,14 @@ inline fun <T> kompanionRetry(times: Int, block: () -> T): T? {
 
 /**
  * Converts a nullable boolean to false if it's null.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val bool: Boolean? = null
+ * val result = bool.kompanionOrFalse()
+ * println(result) // false
+ * ```
  */
 fun Boolean?.kompanionOrFalse(): Boolean {
     return this ?: false
@@ -193,6 +341,14 @@ fun Boolean?.kompanionOrFalse(): Boolean {
 
 /**
  * Converts a nullable boolean to true if it's null.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val bool: Boolean? = null
+ * val result = bool.kompanionOrTrue()
+ * println(result) // true
+ * ```
  */
 fun Boolean?.kompanionOrTrue(): Boolean {
     return this ?: true
@@ -200,6 +356,14 @@ fun Boolean?.kompanionOrTrue(): Boolean {
 
 /**
  * Converts a nullable string to an empty string if it's null.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val str: String? = null
+ * val result = str.kompanionOrEmpty()
+ * println(result) // ""
+ * ```
  */
 fun String?.kompanionOrEmpty(): String {
     return this ?: ""
@@ -207,10 +371,16 @@ fun String?.kompanionOrEmpty(): String {
 
 /**
  * Measures and prints the time taken by a block to execute.
+ * Example usage:
  *
- * @param tag An optional tag to identify the execution time log.
- * @param block The block of code to measure.
- * @return The result of the block execution.
+ * ```Kt
+ *
+ * val result = kompanionMeasureExecutionTime("Time") {
+ *     Thread.sleep(100)
+ *     "Finished"
+ * }
+ * println(result) // "Finished"
+ * ```
  */
 inline fun <T> kompanionMeasureExecutionTime(tag: String = "ExecutionTime", block: () -> T): T {
     val start = System.currentTimeMillis()
@@ -223,10 +393,14 @@ inline fun <T> kompanionMeasureExecutionTime(tag: String = "ExecutionTime", bloc
 
 /**
  * Executes the block if all specified keys in the map have non-null values.
+ * Example usage:
  *
- * @param keys The list of keys to check for non-null values.
- * @param block The block to execute if all specified keys have non-null values.
- * @return The result of the block execution, or null if not all keys have non-null values.
+ * ```Kt
+ *
+ * val map = mapOf(1 to "One", 2 to "Two", 3 to null)
+ * val result = map.kompanionWithNonNullValues(listOf(1, 2)) { it.values.joinToString() }
+ * println(result) // "One, Two"
+ * ```
  */
 inline fun <K, V, R> Map<K, V?>.kompanionWithNonNullValues(keys: List<K>, block: (Map<K, V>) -> R): R? {
     val nonNullValues = keys.mapNotNull { key -> this[key]?.let { key to it } }.toMap()
@@ -235,10 +409,13 @@ inline fun <K, V, R> Map<K, V?>.kompanionWithNonNullValues(keys: List<K>, block:
 
 /**
  * Limits the length of a string, appending an ellipsis if the limit is exceeded.
+ * Example usage:
  *
- * @param maxLength The maximum allowed length of the string.
- * @param ellipsis The string to append if the length limit is exceeded.
- * @return The limited length string, possibly with an ellipsis.
+ * ```Kt
+ *
+ * val result = "Hello World!".kompanionLimitLength(5)
+ * println(result) // "Hello..."
+ * ```
  */
 fun String.kompanionLimitLength(maxLength: Int, ellipsis: String = "..."): String {
     return if (this.length > maxLength) this.take(maxLength) + ellipsis else this
@@ -246,9 +423,21 @@ fun String.kompanionLimitLength(maxLength: Int, ellipsis: String = "..."): Strin
 
 /**
  * Repeatedly runs a block until the condition is met.
+ * Example usage:
  *
- * @param condition The condition to check.
- * @param block The block to run until the condition is met.
+ * ```Kt
+ *
+ * var count = 0
+ * kompanionRunUntil({ count == 5 }) {
+ *     println("Count is $count")
+ *     count++
+ * }
+ * // Count is 0
+ * // Count is 1
+ * // Count is 2
+ * // Count is 3
+ * // Count is 4
+ * ```
  */
 inline fun kompanionRunUntil(condition: () -> Boolean, block: () -> Unit) {
     while (!condition()) {
@@ -258,9 +447,13 @@ inline fun kompanionRunUntil(condition: () -> Boolean, block: () -> Unit) {
 
 /**
  * Executes the block if the value has changed since the last check.
+ * Example usage:
  *
- * @param newValue The new value to check against the current value.
- * @param action The action to execute if the value has changed.
+ * ```Kt
+ *
+ * val tracker = ValueTracker(1)
+ * tracker.onValueChange(2) { println("Value changed to $it") } // Value changed to 2
+ * ```
  */
 class ValueTracker<T>(private var value: T) {
     fun onValueChange(newValue: T, action: (T) -> Unit) {
@@ -272,9 +465,14 @@ class ValueTracker<T>(private var value: T) {
 }
 
 /**
- * Executes the block if any element in the collection is null.
+ * Executes a block if any element in the collection is null.
+ * Example usage:
  *
- * @param block The block to execute if any element is null.
+ * ```Kt
+ *
+ * val list = listOf(1, null, 2)
+ * list.kompanionIfAnyIsNull { println("Null element found!") } // Null element found!
+ * ```
  */
 inline fun <T> Collection<T?>.kompanionIfAnyIsNull(block: () -> Unit) {
     if (any { it == null }) {
@@ -284,9 +482,14 @@ inline fun <T> Collection<T?>.kompanionIfAnyIsNull(block: () -> Unit) {
 
 /**
  * Filters the collection using multiple predicates.
+ * Example usage:
  *
- * @param predicates The predicates to filter the collection by.
- * @return A list of items that match all provided predicates.
+ * ```Kt
+ *
+ * val list = listOf(1, 2, 3, 4)
+ * val result = list.kompanionFilterWithPredicates({ it > 1 }, { it < 4 })
+ * println(result) // [2, 3]
+ * ```
  */
 fun <T> Iterable<T>.kompanionFilterWithPredicates(vararg predicates: (T) -> Boolean): List<T> {
     return this.filter { item -> predicates.all { it(item) } }
@@ -294,8 +497,13 @@ fun <T> Iterable<T>.kompanionFilterWithPredicates(vararg predicates: (T) -> Bool
 
 /**
  * Executes different blocks based on the type of the object.
+ * Example usage:
  *
- * @param block The block to execute if the object matches the specified type.
+ * ```Kt
+ *
+ * val obj: Any = "Hello"
+ * obj.kompanionRunIfTypeMatches<String> { println("String: $it") } // String: Hello
+ * ```
  */
 inline fun <reified T> Any.kompanionRunIfTypeMatches(block: (T) -> Unit) {
     if (this is T) {
@@ -305,9 +513,14 @@ inline fun <reified T> Any.kompanionRunIfTypeMatches(block: (T) -> Unit) {
 
 /**
  * Ensures that the block is executed only once.
+ * Example usage:
  *
- * @param block The block to execute.
- * @return A function that can be called to execute the block once.
+ * ```Kt
+ *
+ * val runOnce = kompanionRunOnce { println("Running once") }
+ * runOnce() // Running once
+ * runOnce() // Doesn't execute again
+ * ```
  */
 inline fun kompanionRunOnce(crossinline block: () -> Unit): () -> Unit {
     var isExecuted = false
@@ -321,8 +534,14 @@ inline fun kompanionRunOnce(crossinline block: () -> Unit): () -> Unit {
 
 /**
  * Lazily evaluates multiple blocks and runs the first one whose condition is true.
+ * Example usage:
  *
- * @param blocks The pairs of conditions and blocks to evaluate.
+ * ```Kt
+ *
+ * kompanionLazyEvaluate(
+ *     true to { println("This is true!") } // This is true!
+ * )
+ * ```
  */
 fun kompanionLazyEvaluate(vararg blocks: Pair<Boolean, () -> Unit>) {
     for ((condition, block) in blocks) {
@@ -335,9 +554,14 @@ fun kompanionLazyEvaluate(vararg blocks: Pair<Boolean, () -> Unit>) {
 
 /**
  * Executes a block when an element is removed from the list.
+ * Example usage:
  *
- * @param block The block to execute upon removal of an element.
- * @return A mutable list that triggers the block on removal.
+ * ```Kt
+ *
+ * val list = mutableListOf(1, 2, 3)
+ * val result = list.kompanionOnRemove { println("$it was removed!") }
+ * result.remove(2) // 2 was removed!
+ * ```
  */
 inline fun <T> MutableList<T>.kompanionOnRemove(crossinline block: (T) -> Unit): MutableList<T> {
     return object : MutableList<T> by this {
@@ -351,9 +575,15 @@ inline fun <T> MutableList<T>.kompanionOnRemove(crossinline block: (T) -> Unit):
 
 /**
  * Executes a block after adding or removing elements from the collection.
+ * Example usage:
  *
- * @param block The block to execute upon modification.
- * @return A mutable collection that triggers the block on modification.
+ * ```Kt
+ *
+ * val list = mutableListOf(1, 2, 3)
+ * val result = list.kompanionOnModification { println("List modified!") }
+ * result.add(4) // List modified!
+ * result.remove(1) // List modified!
+ * ```
  */
 inline fun <T> MutableCollection<T>.kompanionOnModification(crossinline block: () -> Unit): MutableCollection<T> {
     return object : MutableCollection<T> by this {
@@ -373,9 +603,14 @@ inline fun <T> MutableCollection<T>.kompanionOnModification(crossinline block: (
 
 /**
  * Transforms a pair into a new instance of another type.
+ * Example usage:
  *
- * @param transform The transformation function to apply to the pair.
- * @return The result of the transformation.
+ * ```Kt
+ *
+ * val pair = 1 to "one"
+ * val result = pair.kompanionMapTo { a, b -> "$a is $b" }
+ * println(result) // "1 is one"
+ * ```
  */
 inline fun <A, B, R> Pair<A, B>.kompanionMapTo(transform: (A, B) -> R): R {
     return transform(first, second)
@@ -383,17 +618,33 @@ inline fun <A, B, R> Pair<A, B>.kompanionMapTo(transform: (A, B) -> R): R {
 
 /**
  * Toggles the Boolean value.
+ * Example usage:
  *
- * @return The toggled Boolean value.
+ * ```Kt
+ *
+ * val bool = true
+ * val result = bool.kompanionToggle()
+ * println(result) // false
+ * ```
  */
 fun Boolean.kompanionToggle(): Boolean = !this
 
 /**
- * Inline function to capture a reified generic type.
+ * Extension function to get the class of an object.
  *
- * @return The Class instance of the reified type.
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * val str = "Hello"
+ * val classType = str.kompanionGetInstance()
+ * println(classType.simpleName) // String
+ * ```
  */
-inline fun <reified T> kompanionClassOf(): Class<T> = T::class.java
+fun Any.kompanionGetInstance(): Class<*> {
+    return this::class.java
+}
+
 
 /**
  * Retries an operation with exponential backoff.

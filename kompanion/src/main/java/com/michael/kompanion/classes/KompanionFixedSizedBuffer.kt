@@ -13,6 +13,7 @@ package com.michael.kompanion.classes
  * Fixed-size circular buffer.
  *
  *```Kt
+ *
  *  class EventLogger(private val capacity: Int) {
  *     private val eventBuffer = KompanionFixedSizedBuffer<String>(capacity)
  *

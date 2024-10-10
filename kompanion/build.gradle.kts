@@ -1,3 +1,5 @@
+import org.jetbrains.dokka.gradle.DokkaTask
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -43,7 +45,13 @@ android {
     }
 }
 
-
+tasks.withType<DokkaTask>().configureEach {
+    dokkaSourceSets {
+        named("main") {
+            sourceRoots.from(file("src/main/kotlin"))
+        }
+    }
+}
 tasks.withType<Jar> {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Exclude duplicates
 }
@@ -122,7 +130,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.mikeisesele"
                 artifactId = "kompanion"
-                version = "1.4.0"
+                version = "1.4.5"
             }
         }
     }

@@ -14,19 +14,21 @@ import kotlin.reflect.full.primaryConstructor
  *
  */
 
-
 /**
  * Deep equals for data classes using reflection.
  *
- * ```Kt
+ * When to use:
+ * - Use this utility when comparing complex data structures, such as nested data classes, for deep equality.
+ * - Suitable when you want to ensure that all properties of two objects, including nested objects, are the same.
  *
+ * Example:
+ * ```Kt
  * data class Person(val name: String, val age: Int, val friends: List<Person>)
  *
  * val person1 = Person("John", 25, listOf(Person("Doe", 30, emptyList())))
  * val person2 = Person("John", 25, listOf(Person("Doe", 30, emptyList())))
  *
- * println(deepEquals(person1, person2))  // Output: true
- *
+ * println(kompanionDeepEquals(person1, person2))  // Output: true
  * ```
  *
  * @param obj1 The first object to compare.
@@ -56,19 +58,22 @@ fun <T : Any> kompanionDeepEquals(obj1: T?, obj2: T?): Boolean {
 /**
  * Deep copy for data classes using reflection.
  *
- * ```Kt
+ * When to use:
+ * - Use this utility to make a deep copy of an object, duplicating all nested objects and lists.
+ * - This is useful when you need to create a copy of an object that won’t affect the original.
  *
+ * Example:
+ * ```Kt
  * data class Address(val city: String)
  * data class Person(val name: String, val address: Address)
  *
  * val person1 = Person("John", Address("New York"))
- * val person2 = person1.deepCopy()
+ * val person2 = person1.kompanionDeepCopyObject()
  *
  * person2.address.city = "San Francisco"
  *
  * println(person1) // Output: Person(name=John, address=Address(city=New York))
  * println(person2) // Output: Person(name=John, address=Address(city=San Francisco))
- *
  * ```
  *
  * @return A deep copy of the object.
@@ -96,48 +101,19 @@ fun <T : Any> T.kompanionDeepCopyObject(): T {
  *
  * @return A deep copy of the object or null if the original object is null.
  */
-fun <T : Any> T?.deepCopy(): T? = this?.deepCopy()
+fun <T : Any> T?.deepCopy(): T? = this?.kompanionDeepCopyObject()
 
-/**
- * Command interface for actions.
- */
-interface Command {
-    fun execute()
-}
-
-/**
- * Extension function to convert a lambda into a Command.
- *
- * ```Kt
- *
- * val printCommand = { println("Print command executed!") }.toCommand()
- * val anotherCommand = { println("Another command!") }.toCommand()
- *
- * kompanionExecuteCommands(printCommand, anotherCommand)
- *
- * ```
- *
- * @return A Command instance that wraps the lambda.
- */
-fun (() -> Unit).kompanionToCommand(): Command {
-    return object : Command {
-        override fun execute() {
-            this@kompanionToCommand()
-        }
-    }
-}
-
-/**
- * Executes a series of Command instances.
- *
- * @param commands Vararg of Command instances to execute.
- */
-fun kompanionExecuteCommands(vararg commands: Command) {
-    commands.forEach { it.execute() }
-}
 
 /**
  * Memoizes a function with cache expiration after a specified timeout.
+ *
+ * When to use:
+ * - Use this to cache the result of a function call for a certain duration, to avoid redundant calculations or API calls.
+ *
+ * Example:
+ * ```Kt
+ * val memoizedFunction = { x: Int -> x * 2 }.kompanionMemoizeWithExpiry(5, TimeUnit.MINUTES)
+ * ```
  *
  * @param timeout The duration after which the cache expires.
  * @param unit The time unit of the timeout duration.
@@ -160,14 +136,15 @@ fun <T, R> ((T) -> R).kompanionMemoizeWithExpiry(timeout: Long, unit: TimeUnit):
 /**
  * Debounces a function, preventing it from being called too frequently.
  *
+ * When to use:
+ * - Use this to prevent excessive calls to a function within a short time frame, e.g., avoiding multiple button clicks.
  *
+ * Example:
  * ```Kt
- *
- * val debouncedPrint = { msg: String -> println(msg) }.debounce(1000L)
+ * val debouncedPrint = { msg: String -> println(msg) }.kompanionFunctionDebounce(1000L)
  * ```
  * @param waitMs The minimum wait time between consecutive calls.
  * @return A debounced version of the function.
- *
  */
 fun <T> ((T) -> Unit).kompanionFunctionDebounce(waitMs: Long): (T) -> Unit {
     var lastInvocation = 0L
@@ -183,10 +160,12 @@ fun <T> ((T) -> Unit).kompanionFunctionDebounce(waitMs: Long): (T) -> Unit {
 /**
  * Debounces a click event handler, preventing it from being called too frequently.
  *
- * This is useful to avoid multiple consecutive click events within a short time period.
+ * When to use:
+ * - Use this to debounce button clicks, avoiding accidental multiple activations in quick succession.
  *
+ * Example:
  * ```Kt
- * val debouncedClick = { onClick }.debounceClick(500L)
+ * val debouncedClick = { println("Click") }.kompanionDebounce(500L)
  * ```
  * @param waitMs The minimum wait time between consecutive clicks.
  * @return A debounced version of the click handler.
@@ -202,18 +181,18 @@ fun (() -> Unit).kompanionDebounce(waitMs: Long): () -> Unit {
     }
 }
 
-
-
 /**
  * Rate limits a function to only allow execution every `intervalMs` milliseconds.
  *
- * ```Kt
- * val rateLimitedPrint = { msg: String -> println(msg) }.rateLimit(1000L)
- * ```
+ * When to use:
+ * - Use this to throttle high-frequency calls to a function, ensuring it doesn't run more often than desired.
  *
+ * Example:
+ * ```Kt
+ * val rateLimitedPrint = { msg: String -> println(msg) }.kompanionRateLimit(1000L)
+ * ```
  * @param intervalMs The time interval between allowed executions.
  * @return A rate-limited version of the function.
- *
  */
 fun <T> ((T) -> Unit).kompanionRateLimit(intervalMs: Long): (T) -> Unit {
     var lastInvocation = 0L
@@ -223,59 +202,6 @@ fun <T> ((T) -> Unit).kompanionRateLimit(intervalMs: Long): (T) -> Unit {
         if (currentTime - lastInvocation >= intervalMs) {
             lastInvocation = currentTime
             this(param)
-        }
-    }
-}
-
-/**
- * Throttles a suspending function to only allow execution once per `intervalMs` milliseconds.
- *
- * ```Kt
- *
- * val throttledPrint = { msg: String -> println(msg) }.throttle(1000L)
- * ```
- * @param intervalMs The time interval between allowed executions.
- * @return A throttled version of the suspending function.
- *
- */
-fun <T> ((T) -> Unit).kompanionThrottle(intervalMs: Long): (T) -> Unit {
-    var lastInvocation = 0L
-    val lock = Any()
-
-    return { param: T ->
-        synchronized(lock) {
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - lastInvocation >= intervalMs) {
-                lastInvocation = currentTime
-                this(param)
-            }
-        }
-    }
-}
-
-/**
- * Coroutine version of throttle for suspending functions.
- *
- * ```Kt
- *
- * val throttledPrintCoroutine = { msg: String -> println(msg) }.throttleCoroutine(1000L)
- * ```
- *
- * @param intervalMs The time interval between allowed executions.
- * @return A throttled coroutine version of the function.
- *
- */
-fun <T> ((T) -> Unit).kompanionThrottleCoroutine(intervalMs: Long): suspend (T) -> Unit {
-    var lastInvocation = 0L
-    val lock = Any()
-
-    return { param: T ->
-        synchronized(lock) {
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - lastInvocation >= intervalMs) {
-                lastInvocation = currentTime
-                this(param)
-            }
         }
     }
 }

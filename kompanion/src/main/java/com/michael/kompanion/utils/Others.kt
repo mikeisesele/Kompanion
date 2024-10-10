@@ -37,7 +37,7 @@ fun kompanionSafeOperation(
         operation.invoke()
     } catch (e: Exception) {
         //print stack trace
-        e.printStackTrace().logE("kompanionSafeOperation")
+        e.printStackTrace()
         // Invoke the optional actionOnException (cleanup or additional logging)
         actionOnException?.invoke(e)
     }
@@ -60,7 +60,7 @@ fun <T> kompanionSafeNullableReturnableOperation(
         operation.invoke()
     } catch (e: Exception) {
         // Print stack trace
-        e.printStackTrace().logE("kompanionSafeNullableReturnableOperation")
+        e.printStackTrace()
 
         // Invoke the optional actionOnException with the error message
         actionOnException?.invoke(e)
@@ -77,24 +77,22 @@ fun <T> kompanionSafeNullableReturnableOperation(
  * @param actionOnException An optional action to be executed in case of an exception.
  *                          It takes a nullable string parameter representing the error message.
  */
-suspend fun <T> kompanionSafeSuspendOperation(
+suspend fun <T> kompanionSafeSuspendCall(
     operation: suspend () -> T,
     actionOnException: (suspend (exception: Exception?) -> Unit)? = null,
 ): T? {
     return try {
         operation.invoke()
     } catch (e: Exception) {
-        //print stack trace
-        e.printStackTrace().logE("kompanionSafeSuspendOperation")
-
-        // Invoke the optional actionOnException with the error message
+        e.printStackTrace()
         actionOnException?.invoke(e)
         null
     }
 }
 
+
 /**
- * Safely executes an operation by wrapping it in a try-catch block. The operation to be invoked
+ * Safely executes a suspend operation by wrapping it in a try-catch block. The operation to be invoked
  * must have a nullable return type.
  *
  * @param operation The operation to be executed, returning a nullable result.
@@ -102,23 +100,20 @@ suspend fun <T> kompanionSafeSuspendOperation(
  *                          It takes a nullable string parameter representing the error message.
  * @return The result of the operation or null in case of an exception.
  */
-suspend fun <T> kompanionSafeReturnableSuspendOperation(
+suspend fun <T> kompanionSafeNullableSuspendCall(
     operation: suspend () -> T?,
     actionOnException: ((message: Exception?) -> Unit)? = null,
 ): T? {
     return try {
         operation.invoke()
     } catch (e: Exception) {
-        //print stack trace
-        e.printStackTrace().logE("kompanionSafeReturnableSuspendOperation")
-
-        // Invoke the optional actionOnException with the error message
+        e.printStackTrace()
         actionOnException?.invoke(e)
-
-        // Return null in case of an exception
         null
     }
-}/**
+}
+
+/**
  * Safely executes a suspend operation within a Flow by wrapping it in a try-catch block.
  *
  * @param operation The suspend operation to be executed, returning a nullable result.
@@ -127,29 +122,24 @@ suspend fun <T> kompanionSafeReturnableSuspendOperation(
  * @param dispatcher The CoroutineDispatcher that the flow will operate on.
  * @return A Flow emitting the result of the operation or null in case of an exception.
  */
-suspend fun <T> kompanionSafeFlowReturnableOperation(
+suspend fun <T> kompanionSafeFlowCall(
     operation: suspend () -> T?,
     actionOnException: ((message: Exception?) -> Unit)? = null,
     dispatcher: CoroutineDispatcher
 ): Flow<T?> = flow {
-        try {
-            emit(operation.invoke())
-        } catch (e: Exception) {
-            coroutineContext.ensureActive()
+    try {
+        emit(operation.invoke())
+    } catch (e: Exception) {
+        coroutineContext.ensureActive()
+        e.printStackTrace()
+        actionOnException?.invoke(e)
+        emit(null)
+    }
+}.flowOn(dispatcher)
 
-            // Print stack trace
-            e.printStackTrace().logE("kompanionSafeFlowReturnableOperation")
-
-            // Invoke the optional actionOnException with the error message
-            actionOnException?.invoke(e)
-
-            // Emit null in case of an exception
-            emit(null)
-        }
-    }.flowOn(dispatcher)
 
 /**
- * Handles a Flow operation, collecting the first emitted item and processing it in the provided CoroutineScope.
+ * Collects the first emitted item from the Flow and processes it in the provided CoroutineScope.
  *
  * @param onStart Lambda function invoked before starting the Flow collection.
  * @param onItemReceived Lambda function invoked when the first item is received from the Flow.
@@ -158,7 +148,7 @@ suspend fun <T> kompanionSafeFlowReturnableOperation(
  *                The Throwable is provided as an argument to the lambda.
  * @param coroutineScope The CoroutineScope where the onItemReceived lambda is launched.
  */
-suspend fun <T : Any?> Flow<T>.kompanionSingleFlowOnItemReceivedInScope(
+suspend fun <T : Any?> Flow<T>.collectFirstInScope(
     onStart: () -> Unit = {},
     onItemReceived: suspend (T) -> Unit = { _ -> },
     onError: (Throwable) -> Unit = { _ -> },
@@ -179,3 +169,4 @@ suspend fun <T : Any?> Flow<T>.kompanionSingleFlowOnItemReceivedInScope(
         onError(e)
     }
 }
+

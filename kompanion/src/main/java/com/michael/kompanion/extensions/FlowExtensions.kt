@@ -4,19 +4,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlinx.coroutines.flow.transform
 
 
 /**
@@ -54,7 +61,7 @@ suspend inline fun <T : Any?> Flow<T>.kompanionCollectBy(
     }
 }
 
-/*
+/**
  * Collects only the first item from the Flow and wraps it into a single-item flow for further operations.
  * - onStart: Invoked before collecting the first item from the flow.
  * - onItemReceived: Called when the first item is received.
@@ -204,3 +211,188 @@ fun <T> List<T>.kompanionBatchProcessFlow(batchSize: Int): Flow<List<T>> = flow 
         emit(batch)
     }
 }
+
+
+/**
+ * Performs the given action on each emitted value if the predicate is true.
+ *
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * flowOf(1, 2, 3, 4, 5)
+ *     .kompanionFlowOnEachIf({ it % 2 == 0 }) { println("Even number: $it") }
+ *     .collect()
+ * ```
+ *
+ * Output:
+ * Even number: 2
+ * Even number: 4
+ *
+ * When to use:
+ * Use this method when you want to conditionally perform a side effect (e.g., logging or analytics) on each emission in a Flow.
+ *
+ * @param predicate A condition to check for each emitted value.
+ * @param action A block to be executed if the condition is met.
+ */
+fun <T> Flow<T>.kompanionFlowOnEachIf(predicate: (T) -> Boolean, action: (T) -> Unit): Flow<T> =
+    this.onEach { value ->
+        if (predicate(value)) {
+            action(value)
+        }
+    }
+
+
+
+/**
+ * Maps the emitted values of the flow to different values based on conditions.
+ *
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * flowOf(1, 2, 3, 4, 5)
+ *     .kompanionFlowConditionalMap {
+ *         when {
+ *             it % 2 == 0 -> "Even"
+ *             it % 2 != 0 -> "Odd"
+ *             else -> "Unknown"
+ *         }
+ *     }.collect { println(it) }
+ * ```
+ *
+ * Output:
+ * Odd
+ * Even
+ * Odd
+ * Even
+ * Odd
+ *
+ * When to use:
+ * Use this method when you need to transform flow emissions based on specific conditions, similar to a switch-case structure for flow emissions.
+ *
+ * @param transform A block that transforms the emitted values based on conditions.
+ * @return A flow of transformed values.
+ */
+fun <T, R> Flow<T>.kompanionFlowConditionalMap(transform: (T) -> R): Flow<R> =
+    this.map { value ->
+        transform(value)
+    }
+
+
+
+/**
+ * Emits values only when they have changed compared to the previous emission.
+ *
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * flowOf(1, 1, 2, 2, 3)
+ *     .kompanionFlowWhenChanged()
+ *     .collect { println(it) }
+ * ```
+ *
+ * Output:
+ * 1
+ * 2
+ * 3
+ *
+ * When to use:
+ * Use this method when you want to filter out consecutive duplicate emissions and only react to new changes in the flow.
+ *
+ * @return A flow that emits values only when they differ from the previous value.
+ */
+fun <T> Flow<T>.kompanionFlowWhenChanged(): Flow<T> = transform { value ->
+    var lastValue: T? = null
+    if (value != lastValue) {
+        lastValue = value
+        emit(value)
+    }
+}
+
+/**
+ * Dynamically switches between different flows based on the emitted values.
+ *
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * flowOf(1, 2, 3)
+ *     .kompanionFlowSwitchMap { number ->
+ *         if (number % 2 == 0) flowOf("Even Flow") else flowOf("Odd Flow")
+ *     }.collect { println(it) }
+ * ```
+ *
+ * Output:
+ * Odd Flow
+ * Even Flow
+ * Odd Flow
+ *
+ * When to use:
+ * Use this method when you want to dynamically switch between different flows depending on the emitted value.
+ * For example, based on certain conditions, you might want to switch between fetching data from different sources.
+ *
+ * @param transform A block that returns a new flow based on the emitted value.
+ * @return A new flow that switches between other flows based on the values emitted by the source flow.
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <T, R> Flow<T>.kompanionFlowSwitchMap(transform: (T) -> Flow<R>): Flow<R> =
+    this.flatMapLatest { value ->
+        transform(value)
+    }
+
+
+/**
+ * Takes values from the flow until the specified predicate returns true.
+ *
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * flowOf(1, 2, 3, 4, 5)
+ *     .kompanionFlowTakeUntil { it == 3 }
+ *     .collect { println(it) }
+ * ```
+ *
+ * Output:
+ * 1
+ * 2
+ * 3
+ *
+ * When to use:
+ * Use this method when you want to take values from a flow until a certain condition is met, after which no more values will be collected.
+ *
+ * @param predicate The condition that determines when the flow should stop emitting.
+ * @return A flow that stops emitting when the predicate is met.
+ */
+fun <T> Flow<T>.kompanionFlowTakeUntil(predicate: (T) -> Boolean): Flow<T> =
+    this.takeWhile { value ->
+        !predicate(value)
+    }
+
+/**
+ * Conditionally debounces the flow emissions if the predicate is met.
+ *
+ * Example usage:
+ *
+ * ```Kt
+ *
+ * flowOf(1, 2, 3, 4)
+ *     .kompanionFlowDebounceIf({ it % 2 == 0 }, 500L)
+ *     .collect { println(it) }
+ * ```
+ *
+ * When to use:
+ * Use this method when you want to debounce flow emissions based on a specific condition.
+ * This can be useful in scenarios where some emissions need to be delayed while others should flow through without delay.
+ *
+ * @param predicate The condition that determines whether debouncing should occur.
+ * @param debounceTimeMillis The debounce time in milliseconds.
+ * @return A flow with conditionally debounced emissions.
+ */
+@OptIn(FlowPreview::class)
+fun <T> Flow<T>.kompanionFlowDebounceIf(predicate: (T) -> Boolean, debounceTimeMillis: Long): Flow<T> =
+    this.debounce { value ->
+        if (predicate(value)) debounceTimeMillis else 0L
+    }
